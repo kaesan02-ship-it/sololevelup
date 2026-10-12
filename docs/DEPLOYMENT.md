@@ -3,7 +3,7 @@
 ## 준비된 구성
 
 - `.github/workflows/deploy.yml`: main에 push하거나 수동 실행하면 테스트·정적 빌드 후 Pages에 배포한다.
-- 예상 사이트 주소: `https://kaesan02-ship-it.github.io/sololevelup/`. 이 주소는 실제 배포 성공을 확인하기 전까지 예정 주소다.
+- 확인된 사이트 주소: `https://kaesan02-ship-it.github.io/sololevelup/`. 2026-10-12 공개 배포와 모바일 브라우저 검증을 완료했다.
 - `NEXT_PUBLIC_BASE_PATH=/sololevelup npm run build:pages`는 `.next-pages/`에 HTML·JS·CSS·로컬 폰트·PWA 파일을 생성한다.
 - `npm run test:pages`는 위 산출물을 같은 하위 경로로 제공해 모바일 기록 작성, manifest 경로, 폰트, 오프라인 재실행·저장을 검증한다.
 - `npm run build`로 일반 Next 서버용 빌드를 다시 만들 수 있다. 정적 산출물은 저장소에 커밋하지 않는다.
@@ -28,10 +28,12 @@ service_role/secret 키는 사용하지 않는다. Supabase Auth의 Site URL은 
 
 ## 현재 확인 범위
 
-2026-10-12: 정적 빌드와 `/sololevelup/` 경로의 모바일·오프라인 브라우저 검사 통과. GitHub API와 공개 사이트 접근에 필요한 `api.github.com`, `kaesan02-ship-it.github.io`를 환경 설정 초안에 추가했다. GitHub API 요청은 프록시 Forbidden으로 차단돼 Pages 설정을 직접 활성화하지 못했다. GitHub 웹의 실행 결과는 확인했다: 아래 실행에서 build는 38초에 성공하고 2.33MB 배포 아티팩트를 생성했지만, deploy는 Pages 미활성화로 HTTP 404를 반환했다. 따라서 아직 공개 배포 성공 상태가 아니다.
+2026-10-12 09:27 UTC: Pages Source를 GitHub Actions로 활성화한 뒤 실패 작업을 재실행했다. GitHub의 build와 deploy 모두 성공했다.
 
-- 업로드한 앱 커밋: `dfe6e7e84cf45db1aaa8c4f1f2a9570097a0ca88` (main)
-- [실제 GitHub Actions 실행](https://github.com/kaesan02-ship-it/sololevelup/actions/runs/38229309920)
-- 오류: `Failed to create deployment (status: 404) ... Ensure GitHub Pages has been enabled`
-- [Pages 설정](https://github.com/kaesan02-ship-it/sololevelup/settings/pages)에서 Source를 GitHub Actions로 저장한 다음 위 실행의 Re-run failed jobs를 실행한다.
-- 공개 사이트 검증에 필요한 도메인은 환경 설정 초안에 저장됐다. 환경 설정을 저장·게시한 후 공개 주소의 HTTPS 응답과 실제 브라우저 동작을 재확인해야 한다.
+- 공개 주소: https://kaesan02-ship-it.github.io/sololevelup/
+- 배포된 앱 커밋: `dfe6e7e84cf45db1aaa8c4f1f2a9570097a0ca88`
+- [성공한 GitHub Actions 실행](https://github.com/kaesan02-ship-it/sololevelup/actions/runs/38229309920)
+- 실제 공개 HTTPS 주소에 연결한 Chromium 모바일 모의 환경(393×851, 터치, 서울 시간대)의 검사 통과: 초기 설정, 걷기 10분 저장, manifest·아이콘 하위 경로, 오프라인 재실행, 추가 5분 저장 후 총 15분 표시, 로컬 Pretendard 로딩, 가로 넘침 없음, JS/HTTP 오류 없음.
+- 검사는 별도의 임시 브라우저 저장소에서 진행했으며 사용자 기록이나 사진을 사용하지 않았다.
+- 실제 Android OS·네이티브 카메라·키보드·삼성 인터넷 검증은 별도이며, Supabase 프로젝트는 아직 연결되지 않았다. 현재 배포는 기기별 로컬 저장으로 사용할 수 있다.
+- 네트워크 제한은 필요한 명령에 승인된 실행 범위를 사용해 검사했다. 환경 설정 초안의 도메인 저장 여부와 실제 공개 배포 성공은 구분한다.

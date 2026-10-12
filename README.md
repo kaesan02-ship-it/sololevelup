@@ -17,7 +17,7 @@
 - 홈 화면 설치(PWA), 최초 온라인 준비 후 오프라인 재실행·기록 저장
 - Supabase 이메일 로그인·자동 동기화·오프라인 대기·기기 간 충돌 처리 코드
 
-기록은 우선 현재 브라우저의 IndexedDB에 저장합니다. 클라우드 동기화는 [Supabase 연결 안내](docs/SUPABASE-SETUP.md)를 완료한 경우에 활성화됩니다. **실제 Supabase 프로젝트와 웹 배포는 아직 연결/검증되지 않았습니다.** 연결 전에도 개인용 로컬 기능은 사용할 수 있습니다.
+기록은 우선 현재 브라우저의 IndexedDB에 저장합니다. 클라우드 동기화는 [Supabase 연결 안내](docs/SUPABASE-SETUP.md)를 완료한 경우에 활성화됩니다. **웹 배포는 완료됐으며 실제 Supabase 프로젝트 연결은 아직 필요합니다.** 연결 전에도 개인용 로컬 기능은 사용할 수 있습니다.
 
 ## 실행
 
@@ -83,3 +83,5 @@ npm run test:cloud
 - [전체 구현 검토 결과](docs/REVIEW-2026-10-12.md)
 
 - [GitHub Pages 배포 방법과 검증 범위](docs/DEPLOYMENT.md)
+
+공개 앱: https://kaesan02-ship-it.github.io/sololevelup/ — 모바일 화면·기록 저장·오프라인 재실행 확인 완료.
