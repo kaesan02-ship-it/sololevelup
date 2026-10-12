@@ -1,4 +1,5 @@
 "use client";
+import { GrowthBackdrop } from "./growth-art";
 import { useEffect, useRef, useState } from "react";
 import {
   Activity,
@@ -688,6 +689,7 @@ export default function Dashboard() {
           {tab === "home" && (
             <>
               <section className="hero">
+                <GrowthBackdrop />
                 <div className="hero-copy">
                   <div className="pill">
                     <span /> 오늘의 성장

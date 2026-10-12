@@ -1,4 +1,5 @@
 "use client";
+import { XpRing } from "./growth-art";
 import { useEffect, useRef, useState } from "react";
 import {
   Activity,
@@ -120,6 +121,7 @@ export function StatsPage({
           </div>
         </div>
         <div className="stat-today-xp">
+          <XpRing value={summary.todayXp} max={XP_RULES.dailyCap} />
           <Sparkles size={22} />
           <strong>
             {summary.todayXp}
