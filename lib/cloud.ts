@@ -1,9 +1,13 @@
+import { publicProject } from "./public-project";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { type Data, validateBackup } from "./model";
 let client: SupabaseClient | null = null;
 export function cloudClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL,
-    key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const configuredUrl = process.env.NEXT_PUBLIC_SUPABASE_URL,
+    configuredKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const explicit = !!(configuredUrl || configuredKey);
+  const url = explicit ? configuredUrl : publicProject.url,
+    key = explicit ? configuredKey : publicProject.publishableKey;
   if (!url || !key) return null;
   try {
     if (new URL(url).protocol !== "https:") return null;
@@ -21,6 +25,7 @@ export async function readCloud(ownerId: string, token: string) {
     .eq("id", ownerId)
     .maybeSingle()
     .setHeader("Authorization", `Bearer ${token}`);
+  if (error?.code === "PGRST205") throw Error("sync_setup_required");
   if (error) throw error;
   if (!data) return null;
   if (!Number.isSafeInteger(data.version) || data.version < 1)
@@ -40,6 +45,7 @@ export async function writeCloud(data: Data, version: number, token: string) {
       new_payload: data,
     })
     .setHeader("Authorization", `Bearer ${token}`);
+  if (result.error?.code === "PGRST202") throw Error("sync_setup_required");
   if (result.error) throw result.error;
   const next = Number(result.data);
   if (!Number.isSafeInteger(next) || next < 1)

@@ -14,6 +14,7 @@ import {
 import { syncDecision, type SyncMeta } from "@/lib/sync-policy";
 import type { Data } from "@/lib/model";
 type Status =
+  | "setup-required"
   | "unconfigured"
   | "signed-out"
   | "unlinked"
@@ -103,7 +104,12 @@ export function useCloudSync(onRemote: (data: Data) => void) {
         e instanceof Error
           ? e.message
           : String((e as { message?: string }).message ?? "");
-      if (text.includes("sync_conflict")) {
+      if (text.includes("sync_setup_required")) {
+        setStatus("setup-required");
+        setMessage(
+          "로그인은 연결됐지만 동기화 저장 공간을 아직 준비 중이에요. 이 기기의 기록은 보존됩니다.",
+        );
+      } else if (text.includes("sync_conflict")) {
         setStatus("conflict");
         setMessage("다른 기기에 새 기록이 있어요. 보관할 기록을 선택해주세요.");
       } else {
@@ -208,7 +214,14 @@ export function useCloudSync(onRemote: (data: Data) => void) {
         if (latest?.dirty) pending.current = true;
       }
       setMessage("");
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && err.message.includes("sync_setup_required")) {
+        setStatus("setup-required");
+        setMessage(
+          "동기화 저장 공간을 아직 준비 중이에요. 이 기기의 기록은 보존됩니다.",
+        );
+        return;
+      }
       setStatus("error");
       setMessage(
         "연결하지 못했어요. 기록은 이 기기에 보존됩니다. 다시 시도해주세요.",
@@ -225,6 +238,7 @@ export function useCloudSync(onRemote: (data: Data) => void) {
 }
 const labels: Record<Status, string> = {
   unconfigured: "동기화 연결 준비 필요",
+  "setup-required": "동기화 저장 공간 준비 필요",
   "signed-out": "로그인하면 기기 간 동기화",
   unlinked: "연결할 기록 선택",
   syncing: "동기화 중",

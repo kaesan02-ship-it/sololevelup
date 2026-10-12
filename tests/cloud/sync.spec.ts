@@ -7,6 +7,7 @@ test("two devices sync, preserve offline edits and stop on conflicts", async ({
   let remote: { payload: Data; version: number; updated_at: string } | null =
     null;
   let writes = 0;
+  let missingSchema = false;
   let holdSecondRead: Promise<void> | null = null;
   let notifyHeld: (() => void) | null = null;
   const jwt =
@@ -72,6 +73,17 @@ test("two devices sync, preserve offline edits and stop on conflicts", async ({
         return;
       }
       if (url.pathname === "/rest/v1/growth_saves") {
+        if (missingSchema) {
+          await route.fulfill({
+            status: 404,
+            headers,
+            body: JSON.stringify({
+              code: "PGRST205",
+              message: "Could not find growth_saves",
+            }),
+          });
+          return;
+        }
         if (context === b && holdSecondRead) {
           notifyHeld?.();
           await holdSecondRead;
@@ -128,6 +140,17 @@ test("two devices sync, preserve offline edits and stop on conflicts", async ({
     );
   }
   await login(first);
+  missingSchema = true;
+  await first.getByRole("button", { name: "이 기기의 기록 사용" }).click();
+  await expect(first.locator(".sync-panel .install-status")).toHaveText(
+    "동기화 저장 공간 준비 필요",
+  );
+  expect(writes).toBe(0);
+  missingSchema = false;
+  await first.getByRole("button", { name: "지금 동기화", exact: true }).click();
+  await expect(first.locator(".sync-panel .install-status")).toHaveText(
+    "연결할 기록 선택",
+  );
   await first.getByRole("button", { name: "이 기기의 기록 사용" }).click();
   await expect(first.locator(".sync-panel .install-status")).toHaveText(
     "동기화 완료",

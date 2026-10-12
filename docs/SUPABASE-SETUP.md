@@ -1,6 +1,6 @@
 # 휴대폰·PC 동기화 연결 안내
 
-현재 앱의 로그인·동기화 코드는 구현되어 있지만 아직 실제 Supabase 프로젝트가 연결되지 않았습니다. 아래 설정이 완료되면 실제 계정과 두 기기로 검증할 수 있습니다. 연결 전에도 로컬 기록과 백업은 사용할 수 있습니다.
+앱의 공개 연결 설정은 제공된 기존 프로젝트에 맞춰 반영했다. 공개 키는 유효하고 이메일 가입/로그인은 활성화되어 있지만 동기화 테이블 `growth_saves`가 없어 SQL 실행이 아직 필요하다. SQL 완료 후 실제 계정과 두 기기 동기화를 검증할 수 있다. 로컬 기록과 백업은 계속 사용할 수 있다.
 
 ## 1. 연결할 기존 프로젝트
 
@@ -11,7 +11,7 @@
 - [공개 API 키 확인](https://supabase.com/dashboard/project/uotscostmadmnaypdxus/settings/api-keys)
 - [SQL Editor](https://supabase.com/dashboard/project/uotscostmadmnaypdxus/sql/new)
 
-2026-10-12 프로젝트 Auth 주소가 HTTP 401 `No API key found in request`로 응답함을 확인했다. 이는 서비스에 도달했다는 뜻이며 로그인·DB·RLS 설정 완료를 의미하지 않는다. 프로젝트를 새로 만들 필요는 없다. Project URL은 클라우드 환경 설정 초안에 제안값으로 저장했고 공개 Publishable key와 아래 SQL 실행은 아직 필요하다.
+2026-10-12 프로젝트 Auth 주소가 HTTP 401 `No API key found in request`로 응답함을 확인했다. 이는 서비스에 도달했다는 뜻이며 로그인·DB·RLS 설정 완료를 의미하지 않는다. 프로젝트를 새로 만들 필요는 없다. Project URL은 클라우드 환경 설정 초안에 제안값으로 저장했다. 사용자가 제공한 공개 Publishable key는 정상 응답을 확인했고 아래 SQL 실행이 아직 필요하다.
 
 ## 2. 저장 테이블과 권한 적용
 
@@ -62,3 +62,9 @@ Authentication에서 Email 로그인을 활성화합니다. 기본 이메일 인
 - 두 기기의 동시 수정이 충돌로 표시되는지.
 
 현재 모의 계정/저장 API를 사용한 두 브라우저 동기화 테스트를 제공하지만, 실제 Supabase Auth·DB·메일 발송·RLS 운영 검증을 대신하지는 않습니다.
+
+## 공개 키 반영 상태 — 2026-10-12
+
+`lib/public-project.ts`에 사용자가 제공한 공개 프로젝트 URL·Publishable key를 기본 연결 정보로 등록했다. 이 값은 브라우저 앱에서 사용하는 공개 정보이며 관리자 권한·DB 비밀번호를 포함하지 않는다. 별도 배포 환경 변수 쌍을 지정하면 그 설정이 우선한다. GitHub Actions 변수 관리 권한이 없어도 기본 공개 설정으로 배포할 수 있다.
+
+키를 사용한 실제 Auth 설정 조회가 성공했고 email=true, disable_signup=false, mailer_autoconfirm=true를 확인했다. `growth_saves` 조회는 PGRST205(테이블 없음)로 응답했다. 기존 `growth_logs` 등 다른 테이블은 수정하지 않았다. 테이블이 없는 상태에서 연결을 시도하면 앱은 ‘동기화 저장 공간 준비 필요’로 안내하고 로컬 데이터를 보존한다. 아직 실제 가입·로그인·RLS·기기 간 동기화 검증 완료 상태는 아니다.
