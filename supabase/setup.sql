@@ -19,6 +19,7 @@ returns bigint language plpgsql security invoker set search_path=public as $$
 declare current_version bigint; next_version bigint; owner uuid:=auth.uid();
 begin
  if owner is null then raise exception 'authentication_required'; end if;
+ if expected_version is null or expected_version<0 then raise exception 'invalid_version'; end if;
  if new_payload->>'schemaVersion' is distinct from '1' or jsonb_typeof(new_payload->'entries') is distinct from 'array' or jsonb_typeof(new_payload->'metrics') is distinct from 'array' then raise exception 'invalid_payload'; end if;
  if octet_length(new_payload::text)>10000000 then raise exception 'payload_too_large'; end if;
  -- Serialize saves for this account, including the first insert.
