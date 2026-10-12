@@ -265,11 +265,11 @@ test("sample records render period comparisons, goals and preview images", async
   await page.setViewportSize({ width: 1440, height: 1100 });
   await page.screenshot({ path: "docs/preview-stats.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth,
-    ),
-  ).toBeTruthy();
+  await expect
+    .poll(() =>
+      page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
+    )
+    .toBeTruthy();
   await page
     .locator(".mobile-nav")
     .getByRole("button", { name: "성장 분석" })
@@ -653,4 +653,63 @@ test("today resets after midnight while the app stays open", async ({
   await expect(page.getByLabel("날짜", { exact: true })).toHaveValue(
     "2026-10-11",
   );
+});
+
+test("daily history adds and edits past records and opens dates older than the calendar", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 393, height: 851 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "나의 여정 시작하기" }).click();
+  await page
+    .locator(".mobile-nav")
+    .getByRole("button", { name: "나의 기록", exact: true })
+    .click();
+  await page.getByRole("button", { name: "날짜별 보기", exact: true }).click();
+  await page.getByLabel("조회 날짜", { exact: true }).fill("2025-01-02");
+  await expect(page.getByText("아직 남긴 기록이 없어요")).toBeVisible();
+  await page.getByLabel("날짜별 기록 항목").selectOption({ label: "걷기" });
+  await page.getByRole("button", { name: "선택한 날짜에 기록" }).click();
+  await expect(page.getByLabel("날짜", { exact: true })).toHaveValue(
+    "2025-01-02",
+  );
+  await page.getByLabel("기록값 · 분").fill("12");
+  await page.getByRole("textbox", { name: /메모/ }).fill("점심 식사 후 산책");
+  await page.getByRole("button", { name: "기록 저장" }).click();
+  await expect(page.locator(".daily-entry")).toContainText("12 분");
+  await expect(page.locator(".daily-entry")).toContainText("점심 식사 후 산책");
+  await expect(page.locator(".daily-summary")).toContainText("10 XP");
+  await page
+    .getByRole("button", { name: "걷기 기록 수정", exact: true })
+    .click();
+  await page.getByLabel("기록값 · 분").fill("15");
+  await page.getByRole("button", { name: "기록 저장" }).click();
+  await expect(page.locator(".daily-entry")).toContainText("15 분");
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBeTruthy();
+  await page.screenshot({
+    path: "docs/preview-daily-mobile.png",
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: "이전 날짜", exact: true }).click();
+  await expect(page.getByText("아직 남긴 기록이 없어요")).toBeVisible();
+  await page.getByRole("button", { name: "다음 날짜", exact: true }).click();
+  await expect(page.locator(".daily-entry")).toContainText("15 분");
+  await page
+    .locator(".mobile-nav")
+    .getByRole("button", { name: "나의 스탯", exact: true })
+    .click();
+  await page.getByLabel("캘린더 조회 날짜").fill("2025-01-02");
+  await expect(page.locator(".day-records")).toContainText("15 분");
+  await page.reload();
+  await page
+    .locator(".mobile-nav")
+    .getByRole("button", { name: "나의 기록", exact: true })
+    .click();
+  await page.getByRole("button", { name: "날짜별 보기", exact: true }).click();
+  await page.getByLabel("조회 날짜", { exact: true }).fill("2025-01-02");
+  await expect(page.locator(".daily-entry")).toContainText("15 분");
 });

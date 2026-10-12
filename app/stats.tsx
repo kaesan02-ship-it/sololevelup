@@ -410,6 +410,28 @@ export function StatsPage({
           <h2>나의 기록 캘린더</h2>
           <span className="muted">최근 84일 · 날짜를 누르면 기록 확인</span>
         </div>
+        <div className="date-navigation stats-date-navigation">
+          <label>
+            조회 날짜
+            <input
+              type="date"
+              aria-label="캘린더 조회 날짜"
+              min="0001-01-01"
+              max={date}
+              value={selectedDate}
+              onChange={(e) => {
+                if (e.target.value && e.target.validity.valid)
+                  setSelectedDate(e.target.value);
+              }}
+            />
+          </label>
+          <button className="secondary" onClick={() => setSelectedDate(date)}>
+            오늘 기록
+          </button>
+        </div>
+        <p className="form-hint">
+          84일 이전 기록도 날짜를 직접 선택하면 볼 수 있어요.
+        </p>
         <div className="calendar-scroll" ref={calendarRef}>
           <div className="calendar-grid">
             {historyDates.map((d) => {

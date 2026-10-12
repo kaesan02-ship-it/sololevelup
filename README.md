@@ -85,3 +85,7 @@ npm run test:cloud
 - [GitHub Pages 배포 방법과 검증 범위](docs/DEPLOYMENT.md)
 
 공개 앱: https://kaesan02-ship-it.github.io/sololevelup/ — 모바일 화면·기록 저장·오프라인 재실행 확인 완료.
+
+날짜별 조회: **나의 기록 → 날짜별 보기**에서 과거 기록과 메모를 확인·수정하고 선택 날짜에 기록을 추가합니다. **나의 스탯 → 나의 기록 캘린더**에서도 조회 날짜를 직접 선택할 수 있습니다.
+
+- [인바디 연동 검토와 필요한 조건](docs/INBODY-INTEGRATION.md)

@@ -70,6 +70,7 @@ import { ProfilePhoto, PhotoShowcase, PhotoEditor } from "./photo";
 import { PracticePicker } from "./practices";
 import { XpDetails } from "./xp";
 import { practices, practiceMetric } from "@/lib/practices";
+import { DailyRecords } from "./daily";
 import { StatsPage } from "./stats";
 import {
   MAX_PINNED,
@@ -181,6 +182,7 @@ export default function Dashboard() {
   const [, refreshDate] = useState(0);
   const [tab, setTab] = useState<Tab>("home");
   const [days, setDays] = useState(7);
+  const [recordView, setRecordView] = useState<"metrics" | "dates">("metrics");
   const [snapshotMode, setSnapshotMode] = useState<"pinned" | "recent" | "all">(
     "pinned",
   );
@@ -194,6 +196,7 @@ export default function Dashboard() {
   const [record, setRecord] = useState<{
     metric: Metric;
     entry?: Entry;
+    initialDate?: string;
   } | null>(null);
   const [xpModal, setXpModal] = useState(false);
   const [practiceModal, setPracticeModal] = useState(false);
@@ -687,10 +690,10 @@ export default function Dashboard() {
               <section className="hero">
                 <div className="hero-copy">
                   <div className="pill">
-                    <span /> GROWTH IN PROGRESS
+                    <span /> 오늘의 성장
                   </div>
                   <h2>{data.profile.nickname}님의 여정</h2>
-                  <p>오늘의 작은 실천이 내일의 나를 만듭니다.</p>
+                  <p>작은 실천을 쌓아 나의 변화를 확인해요.</p>
                   <div className="hero-progress-head">
                     <span>
                       다음 레벨까지{" "}
@@ -713,7 +716,7 @@ export default function Dashboard() {
                       }}
                     />
                   </div>
-                  <small>레벨은 기록 습관의 누적입니다.</small>
+                  <small>꾸준히 기록할수록 레벨이 올라요.</small>
                   <button
                     className="text-button xp-rule-link"
                     onClick={() => setXpModal(true)}
@@ -1025,165 +1028,200 @@ export default function Dashboard() {
           )}
           {tab === "records" && (
             <>
-              <button
-                className="practice-banner"
-                onClick={() => setPracticeModal(true)}
+              <div
+                className="record-view-tabs segmented"
+                aria-label="기록 보기 방식"
               >
-                <BookOpen size={20} />
-                <span>
-                  <strong>추천 활동 라이브러리</strong>
-                  <small>
-                    걷기·회상 학습·회복·관계·실행 루틴 초안에서 골라보세요.
-                  </small>
-                </span>
-                <ArrowRight size={17} />
-              </button>
-              <div className="toolbar">
-                <div className="search-field">
-                  <Search size={18} />
-                  <input
-                    aria-label="항목 검색"
-                    placeholder="성장 항목 검색"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                </div>
-                <select
-                  aria-label="분류 필터"
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
+                <button
+                  className={recordView === "metrics" ? "selected" : ""}
+                  aria-pressed={recordView === "metrics"}
+                  onClick={() => setRecordView("metrics")}
                 >
-                  <option value="all">모든 분류</option>
-                  <option value="archive">보관한 항목</option>
-                  {data.categories.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                  <option value="">미분류</option>
-                </select>
+                  항목별 보기
+                </button>
+                <button
+                  className={recordView === "dates" ? "selected" : ""}
+                  aria-pressed={recordView === "dates"}
+                  onClick={() => setRecordView("dates")}
+                >
+                  날짜별 보기
+                </button>
               </div>
-              <div className="record-grid">
-                {data.metrics
-                  .filter(
+              {recordView === "dates" ? (
+                <DailyRecords
+                  data={data}
+                  today={date}
+                  onRecord={(metric, initialDate) =>
+                    setRecord({ metric, initialDate })
+                  }
+                  onEdit={(metric, entry) => setRecord({ metric, entry })}
+                />
+              ) : (
+                <>
+                  <button
+                    className="practice-banner"
+                    onClick={() => setPracticeModal(true)}
+                  >
+                    <BookOpen size={20} />
+                    <span>
+                      <strong>추천 활동 라이브러리</strong>
+                      <small>
+                        걷기, 학습, 수면 준비 등 나에게 맞는 활동을 골라보세요.
+                      </small>
+                    </span>
+                    <ArrowRight size={17} />
+                  </button>
+                  <div className="toolbar">
+                    <div className="search-field">
+                      <Search size={18} />
+                      <input
+                        aria-label="항목 검색"
+                        placeholder="성장 항목 검색"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                      />
+                    </div>
+                    <select
+                      aria-label="분류 필터"
+                      value={filter}
+                      onChange={(e) => setFilter(e.target.value)}
+                    >
+                      <option value="all">모든 분류</option>
+                      <option value="archive">보관한 항목</option>
+                      {data.categories.map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))}
+                      <option value="">미분류</option>
+                    </select>
+                  </div>
+                  <div className="record-grid">
+                    {data.metrics
+                      .filter(
+                        (m) =>
+                          (filter === "archive" ? m.archived : !m.archived) &&
+                          (filter === "all" ||
+                            filter === "archive" ||
+                            m.categoryId === filter) &&
+                          m.name.toLowerCase().includes(search.toLowerCase()),
+                      )
+                      .map((m) => (
+                        <article className="panel record-card" key={m.id}>
+                          <div className="record-card-head">
+                            <span
+                              className="metric-symbol"
+                              style={{
+                                color: color(m),
+                                background: color(m) + "15",
+                              }}
+                            >
+                              <MetricIcon metric={m} />
+                            </span>
+                            <div>
+                              <h3>{m.name}</h3>
+                              <small>
+                                {data.categories.find(
+                                  (c) => c.id === m.categoryId,
+                                )?.name ?? "미분류"}{" "}
+                                · {kinds[m.kind]}
+                              </small>
+                            </div>
+                            <button
+                              className="icon-button"
+                              aria-label={`${m.name} 설정`}
+                              onClick={() => setEditor(m)}
+                            >
+                              <MoreHorizontal size={19} />
+                            </button>
+                          </div>
+                          <div className="record-card-value">
+                            {fmt(
+                              aggregate(
+                                m,
+                                data.entries.filter((e) => e.metricId === m.id),
+                              ),
+                            )}{" "}
+                            <small>{m.unit}</small>
+                          </div>
+                          <div className="record-actions">
+                            <button
+                              className="secondary"
+                              onClick={() => quick(m)}
+                              disabled={busy || m.archived}
+                            >
+                              <Plus size={16} /> 기록하기
+                            </button>
+                            <button
+                              className={
+                                "icon-button " + (m.pinned ? "pinned" : "")
+                              }
+                              aria-label={`${m.name} ${m.pinned ? "고정 해제" : "고정"}`}
+                              onClick={() => {
+                                if (
+                                  !m.pinned &&
+                                  active.filter((x) => x.pinned).length >=
+                                    MAX_PINNED
+                                ) {
+                                  setError(
+                                    "첫 화면에는 최대 8개 항목을 고정할 수 있어요.",
+                                  );
+                                  return;
+                                }
+                                changeMetric(m, { pinned: !m.pinned });
+                              }}
+                            >
+                              <Pin size={17} />
+                            </button>
+                            <button
+                              className="text-button"
+                              onClick={() => {
+                                setSelected(m.id);
+                                setTab("growth");
+                              }}
+                            >
+                              상세 <ArrowRight size={14} />
+                            </button>
+                          </div>
+                          <div className="reorder-actions">
+                            <button
+                              className="icon-button"
+                              disabled={busy || data.metrics[0]?.id === m.id}
+                              aria-label={`${m.name} 위로 이동`}
+                              onClick={() => reorder(m, -1)}
+                            >
+                              <ArrowUp size={14} />
+                            </button>
+                            <button
+                              className="icon-button"
+                              disabled={
+                                busy || data.metrics.at(-1)?.id === m.id
+                              }
+                              aria-label={`${m.name} 아래로 이동`}
+                              onClick={() => reorder(m, 1)}
+                            >
+                              <ArrowDown size={14} />
+                            </button>
+                            <span className="muted">항목 순서</span>
+                          </div>
+                        </article>
+                      ))}
+                  </div>
+                  {!data.metrics.some(
                     (m) =>
                       (filter === "archive" ? m.archived : !m.archived) &&
                       (filter === "all" ||
                         filter === "archive" ||
                         m.categoryId === filter) &&
                       m.name.toLowerCase().includes(search.toLowerCase()),
-                  )
-                  .map((m) => (
-                    <article className="panel record-card" key={m.id}>
-                      <div className="record-card-head">
-                        <span
-                          className="metric-symbol"
-                          style={{
-                            color: color(m),
-                            background: color(m) + "15",
-                          }}
-                        >
-                          <MetricIcon metric={m} />
-                        </span>
-                        <div>
-                          <h3>{m.name}</h3>
-                          <small>
-                            {data.categories.find((c) => c.id === m.categoryId)
-                              ?.name ?? "미분류"}{" "}
-                            · {kinds[m.kind]}
-                          </small>
-                        </div>
-                        <button
-                          className="icon-button"
-                          aria-label={`${m.name} 설정`}
-                          onClick={() => setEditor(m)}
-                        >
-                          <MoreHorizontal size={19} />
-                        </button>
-                      </div>
-                      <div className="record-card-value">
-                        {fmt(
-                          aggregate(
-                            m,
-                            data.entries.filter((e) => e.metricId === m.id),
-                          ),
-                        )}{" "}
-                        <small>{m.unit}</small>
-                      </div>
-                      <div className="record-actions">
-                        <button
-                          className="secondary"
-                          onClick={() => quick(m)}
-                          disabled={busy || m.archived}
-                        >
-                          <Plus size={16} /> 기록하기
-                        </button>
-                        <button
-                          className={
-                            "icon-button " + (m.pinned ? "pinned" : "")
-                          }
-                          aria-label={`${m.name} ${m.pinned ? "고정 해제" : "고정"}`}
-                          onClick={() => {
-                            if (
-                              !m.pinned &&
-                              active.filter((x) => x.pinned).length >=
-                                MAX_PINNED
-                            ) {
-                              setError(
-                                "첫 화면에는 최대 8개 항목을 고정할 수 있어요.",
-                              );
-                              return;
-                            }
-                            changeMetric(m, { pinned: !m.pinned });
-                          }}
-                        >
-                          <Pin size={17} />
-                        </button>
-                        <button
-                          className="text-button"
-                          onClick={() => {
-                            setSelected(m.id);
-                            setTab("growth");
-                          }}
-                        >
-                          상세 <ArrowRight size={14} />
-                        </button>
-                      </div>
-                      <div className="reorder-actions">
-                        <button
-                          className="icon-button"
-                          disabled={busy || data.metrics[0]?.id === m.id}
-                          aria-label={`${m.name} 위로 이동`}
-                          onClick={() => reorder(m, -1)}
-                        >
-                          <ArrowUp size={14} />
-                        </button>
-                        <button
-                          className="icon-button"
-                          disabled={busy || data.metrics.at(-1)?.id === m.id}
-                          aria-label={`${m.name} 아래로 이동`}
-                          onClick={() => reorder(m, 1)}
-                        >
-                          <ArrowDown size={14} />
-                        </button>
-                        <span className="muted">항목 순서</span>
-                      </div>
-                    </article>
-                  ))}
-              </div>
-              {!data.metrics.some(
-                (m) =>
-                  (filter === "archive" ? m.archived : !m.archived) &&
-                  (filter === "all" ||
-                    filter === "archive" ||
-                    m.categoryId === filter) &&
-                  m.name.toLowerCase().includes(search.toLowerCase()),
-              ) && (
-                <div className="panel empty">
-                  <Search />
-                  <h3>표시할 항목이 없어요</h3>
-                  <p>다른 분류를 선택하거나 새 항목을 추가하세요.</p>
-                </div>
+                  ) && (
+                    <div className="panel empty">
+                      <Search />
+                      <h3>표시할 항목이 없어요</h3>
+                      <p>다른 분류를 선택하거나 새 항목을 추가하세요.</p>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}
@@ -1847,6 +1885,7 @@ export default function Dashboard() {
         <RecordForm
           metric={record.metric}
           entry={record.entry}
+          initialDate={record.initialDate}
           data={data}
           date={date}
           busy={busy}
@@ -1858,7 +1897,7 @@ export default function Dashboard() {
             if (
               await commit(
                 { ...data, entries: [...entries, entry] },
-                "기록했어요. 오늘도 한 단계 더!",
+                "기록을 저장했어요.",
               )
             )
               setRecord(null);
@@ -2155,6 +2194,7 @@ function MetricForm({
 function RecordForm({
   metric,
   entry,
+  initialDate,
   data,
   date,
   busy,
@@ -2163,13 +2203,14 @@ function RecordForm({
 }: {
   metric: Metric;
   entry?: Entry;
+  initialDate?: string;
   data: Data;
   date: string;
   busy: boolean;
   close: () => void;
   onSave: (e: Entry, replaceId?: string) => Promise<void>;
 }) {
-  const [recordDate, setDate] = useState(entry?.date ?? date);
+  const [recordDate, setDate] = useState(entry?.date ?? initialDate ?? date);
   const [value, setValue] = useState(entry ? String(entry.value) : "");
   const [localError, setLocalError] = useState("");
   const [replace, setReplace] = useState(false);

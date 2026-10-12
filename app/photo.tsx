@@ -75,8 +75,8 @@ export function PhotoEditor({
     <div className="photo-editor">
       <ProfilePhoto photo={draft} name={name} />
       <p className="modal-description">
-        본인 사진이나 직접 만든 프로필 이미지를 등록하세요. 사진 기반 캐릭터
-        이미지도 등록할 수 있어요.
+        나를 표현하는 사진이나 이미지를 골라보세요. 원형 미리보기로 확인한 뒤
+        저장할 수 있어요.
       </p>
       <input
         ref={ref}

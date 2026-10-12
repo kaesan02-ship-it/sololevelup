@@ -2,12 +2,16 @@
 
 현재 앱의 로그인·동기화 코드는 구현되어 있지만 아직 실제 Supabase 프로젝트가 연결되지 않았습니다. 아래 설정이 완료되면 실제 계정과 두 기기로 검증할 수 있습니다. 연결 전에도 로컬 기록과 백업은 사용할 수 있습니다.
 
-## 1. 프로젝트 만들기
+## 1. 연결할 기존 프로젝트
 
-1. https://supabase.com/dashboard 에서 계정을 만들거나 로그인합니다.
-2. New project를 선택하고 조직·프로젝트 이름을 입력합니다. 개인용이라면 무료 플랜으로 시작할 수 있으며 현재 플랜 조건은 서비스 화면에서 확인하세요.
-3. 지역은 주 사용 위치에서 가까운 곳을 선택합니다. 데이터베이스 비밀번호는 개인 비밀번호 관리자 등에 안전하게 보관하세요. 이 앱의 클라이언트에 입력하는 값은 아닙니다.
-4. 프로젝트 준비가 완료될 때까지 기다립니다.
+사용자가 제공한 프로젝트: `uotscostmadmnaypdxus`.
+
+- [프로젝트 대시보드](https://supabase.com/dashboard/project/uotscostmadmnaypdxus)
+- Project URL: `https://uotscostmadmnaypdxus.supabase.co`
+- [공개 API 키 확인](https://supabase.com/dashboard/project/uotscostmadmnaypdxus/settings/api-keys)
+- [SQL Editor](https://supabase.com/dashboard/project/uotscostmadmnaypdxus/sql/new)
+
+2026-10-12 프로젝트 Auth 주소가 HTTP 401 `No API key found in request`로 응답함을 확인했다. 이는 서비스에 도달했다는 뜻이며 로그인·DB·RLS 설정 완료를 의미하지 않는다. 프로젝트를 새로 만들 필요는 없다. Project URL은 클라우드 환경 설정 초안에 제안값으로 저장했고 공개 Publishable key와 아래 SQL 실행은 아직 필요하다.
 
 ## 2. 저장 테이블과 권한 적용
 
@@ -26,13 +30,15 @@
 
 이 채팅의 클라우드 환경 설정에는 위 두 변수와 `*.supabase.co` 네트워크 허용 요구가 초안으로 저장되어 있습니다. 환경 설정에서 값을 입력하고 저장한 뒤 환경을 게시하세요. 저장/게시는 SQL 실행과 별개이며, 현재 실행 중인 앱은 값을 반영해 다시 빌드·시작해야 합니다. 프로젝트 URL과 공개 키는 채팅에 붙여넣을 필요가 없습니다.
 
+배포용 GitHub Actions는 저장소 Settings → Secrets and variables → Actions → Variables의 동일한 두 변수를 읽습니다. 클라우드 개발 환경의 값과 GitHub Actions의 값은 별개입니다. 현재 연결된 GitHub 앱은 Actions 변수 관리 API 권한이 없어 변수 설정을 대신할 수 없습니다. 공개 키는 사용자가 저장소 Variables에 설정한 뒤 알려주면 재배포할 수 있습니다.
+
 로컬 개발에서는 `.env.example`을 참고해 Git에서 제외된 `.env.local`에 값을 설정하세요.
 
 ## 4. 이메일 로그인 준비
 
 Authentication에서 Email 로그인을 활성화합니다. 기본 이메일 인증을 유지한 경우 가입 메일을 확인한 뒤 로그인합니다. Auth URL Configuration의 Site URL과 허용 Redirect URL은 실제 배포할 앱 주소에 맞춥니다. 처음에는 테스트 계정으로 가입·로그인을 확인하고, 필요한 경우 서비스가 안내하는 메일 발송 설정/제한을 확인하세요.
 
-휴대폰에서 쓰려면 앱을 HTTPS 주소로 배포해야 합니다. 클라우드 개발 머신의 로컬 주소는 휴대폰 공개 서비스 주소가 아닙니다. 웹 배포는 이 문서의 프로젝트 연결과 별도 단계입니다.
+현재 공개 앱은 https://kaesan02-ship-it.github.io/sololevelup/ 입니다. Supabase Auth의 Site URL과 Redirect URL에 이 주소를 사용하세요.
 
 ## 5. 처음 두 기기 연결하기
 
