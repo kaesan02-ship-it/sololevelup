@@ -28,4 +28,10 @@ service_role/secret 키는 사용하지 않는다. Supabase Auth의 Site URL은 
 
 ## 현재 확인 범위
 
-2026-10-12: 정적 빌드와 `/sololevelup/` 경로의 모바일·오프라인 브라우저 검사 통과. GitHub API와 공개 사이트 접근에 필요한 `api.github.com`, `kaesan02-ship-it.github.io`를 환경 설정 초안에 추가했다. 현재 API 요청은 프록시 Forbidden으로 차단되어 원격 Pages 설정·Actions 실행 결과를 확인하지 못했다. 공개 URL의 실제 성공은 별도 확인이 필요하다.
+2026-10-12: 정적 빌드와 `/sololevelup/` 경로의 모바일·오프라인 브라우저 검사 통과. GitHub API와 공개 사이트 접근에 필요한 `api.github.com`, `kaesan02-ship-it.github.io`를 환경 설정 초안에 추가했다. GitHub API 요청은 프록시 Forbidden으로 차단돼 Pages 설정을 직접 활성화하지 못했다. GitHub 웹의 실행 결과는 확인했다: 아래 실행에서 build는 38초에 성공하고 2.33MB 배포 아티팩트를 생성했지만, deploy는 Pages 미활성화로 HTTP 404를 반환했다. 따라서 아직 공개 배포 성공 상태가 아니다.
+
+- 업로드한 앱 커밋: `dfe6e7e84cf45db1aaa8c4f1f2a9570097a0ca88` (main)
+- [실제 GitHub Actions 실행](https://github.com/kaesan02-ship-it/sololevelup/actions/runs/38229309920)
+- 오류: `Failed to create deployment (status: 404) ... Ensure GitHub Pages has been enabled`
+- [Pages 설정](https://github.com/kaesan02-ship-it/sololevelup/settings/pages)에서 Source를 GitHub Actions로 저장한 다음 위 실행의 Re-run failed jobs를 실행한다.
+- 공개 사이트 검증에 필요한 도메인은 환경 설정 초안에 저장됐다. 환경 설정을 저장·게시한 후 공개 주소의 HTTPS 응답과 실제 브라우저 동작을 재확인해야 한다.
