@@ -95,9 +95,9 @@ export function DailyRecords({
       </div>
       <article className="daily-journal">
         <div className="section-head">
-          <h3>이날의 회고</h3>
+          <h3>이날의 일기</h3>
           <button className="secondary" onClick={() => onJournal(selectedDate)}>
-            {journal ? "회고 수정" : "회고 남기기"}
+            {journal ? "일기 수정" : "일기 남기기"}
           </button>
         </div>
         {journal ? (

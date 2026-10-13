@@ -13,7 +13,7 @@ export type EvidenceSource = {
 export const evidenceSources: EvidenceSource[] = [
   {
     id: "who",
-    verification: "2026-10-12 · 공식 안내·공개 전문 확인",
+    verification: "2026-10-12 · 공식 안내·공개 전체 내용 확인",
     title: "WHO guidelines on physical activity and sedentary behaviour",
     authors: "Bull et al.",
     year: 2020,
@@ -26,59 +26,59 @@ export const evidenceSources: EvidenceSource[] = [
   },
   {
     id: "learning",
-    verification: "2026-10-12 · 서지·초록 확인, 전문 미확인",
+    verification: "2026-10-12 · 논문 정보·요약 확인, 전체 내용 미확인",
     title: "Improving Students’ Learning With Effective Learning Techniques",
     authors: "Dunlosky et al.",
     year: 2013,
     kind: "review",
     url: "https://doi.org/10.1177/1529100612453266",
     summary:
-      "회상 연습과 간격을 둔 학습은 여러 학습 조건에서 유용성이 높게 평가되었습니다.",
+      "배운 내용을 보지 않고 떠올리는 연습과 며칠 간격으로 반복하는 학습은 여러 학습 조건에서 유용성이 높게 평가되었습니다.",
     limits:
       "학습 내용과 연습 방법에 따라 효과가 달라집니다. 단순 독서 시간만으로 학습 효과를 판정하지 않습니다.",
   },
   {
     id: "planning",
-    verification: "2026-10-12 · 서지 확인, 초록·전문 미확인",
+    verification: "2026-10-12 · 논문 정보 확인, 요약·전체 내용 미확인",
     title: "Implementation Intentions and Goal Achievement",
     authors: "Gollwitzer & Sheeran",
     year: 2006,
     kind: "meta-analysis",
     url: "https://doi.org/10.1016/S0065-2601(06)38002-1",
     summary:
-      "언제·어디서·무엇을 할지 정하는 실행 의도는 목표 수행을 돕는 전략으로 연구되었습니다.",
+      "언제·어디서·무엇을 할지 구체적으로 정하는 계획은 목표 수행을 돕는 전략으로 연구되었습니다.",
     limits:
       "계획만 세우는 것과 실제 수행은 다릅니다. 메모에 구체적인 다음 행동을 적어보세요.",
   },
   {
     id: "monitoring",
-    verification: "2026-10-12 · 서지·초록 확인, 전문 미확인",
+    verification: "2026-10-12 · 논문 정보·요약 확인, 전체 내용 미확인",
     title: "Does monitoring goal progress promote goal attainment?",
     authors: "Harkin et al.",
     year: 2016,
     kind: "meta-analysis",
     url: "https://doi.org/10.1037/bul0000025",
     summary:
-      "138개 무작위 배정 연구에서 진행 점검 개입은 평균적으로 목표 달성을 도왔습니다. 실제 결과를 기록하는 방식이 중요합니다.",
+      "138개 무작위 배정 연구에서 진행 상황을 점검하도록 돕는 방법은 평균적으로 목표 달성을 도왔습니다. 실제 결과를 기록하는 방식이 중요합니다.",
     limits:
       "앱의 XP 숫자는 연구에서 정한 효과 점수가 아닙니다. 기록과 실제 결과를 함께 확인하세요.",
   },
   {
     id: "mindfulness",
-    verification: "2026-10-12 · 서지·초록 확인, 전문 조회 오류",
+    verification: "2026-10-12 · 논문 정보·요약 확인, 전체 내용 조회 오류",
     title: "Meditation Programs for Psychological Stress and Well-being",
     authors: "Goyal et al.",
     year: 2014,
     kind: "review",
     url: "https://doi.org/10.1001/jamainternmed.2013.13018",
     summary:
-      "47개 시험을 종합해 구조화된 마음챙김 프로그램의 불안·우울·통증 개선에 중간 수준의 근거를 보고했습니다.",
+      "47개 시험을 종합해 정해진 과정에 따라 호흡과 현재의 감각에 집중하는 명상 프로그램의 불안·우울·통증 개선에 중간 수준의 근거를 보고했습니다.",
     limits:
       "주의력·수면·체중 개선 근거는 부족하거나 불확실했습니다. 연구 프로그램과 3분 호흡 연습은 다르며 동일 효과를 보장하지 않습니다.",
   },
   {
     id: "sleep",
-    verification: "2026-10-12 · 서지·초록 확인, 권고 본문 미확인",
+    verification: "2026-10-12 · 논문 정보·요약 확인, 권고 본문 미확인",
     title: "Recommended Amount of Sleep for a Healthy Adult",
     authors: "Watson et al.",
     year: 2015,
@@ -91,7 +91,7 @@ export const evidenceSources: EvidenceSource[] = [
   },
   {
     id: "connection",
-    verification: "2026-10-12 · 서지·초록·공개 전문 확인",
+    verification: "2026-10-12 · 논문 정보·요약·공개 전체 내용 확인",
     title: "Social Relationships and Mortality Risk: A Meta-analytic Review",
     authors: "Holt-Lunstad et al.",
     year: 2010,
@@ -159,7 +159,7 @@ export const practices: Practice[] = [
   },
   {
     id: "retrieval",
-    name: "회상 학습",
+    name: "배운 내용 떠올리기",
     categoryId: "learn",
     kind: "time",
     unit: "분",
@@ -183,7 +183,7 @@ export const practices: Practice[] = [
   },
   {
     id: "mindful-pause",
-    name: "마음챙김 휴식",
+    name: "호흡에 집중하며 쉬기",
     categoryId: "mind",
     kind: "time",
     unit: "분",
@@ -195,7 +195,7 @@ export const practices: Practice[] = [
   },
   {
     id: "connection",
-    name: "의미 있는 안부",
+    name: "가까운 사람에게 안부 묻기",
     categoryId: "relations",
     kind: "check",
     unit: "일",
@@ -207,7 +207,7 @@ export const practices: Practice[] = [
   },
   {
     id: "next-action",
-    name: "다음 행동 계획",
+    name: "다음에 할 일 정하기",
     categoryId: "execution",
     kind: "check",
     unit: "일",

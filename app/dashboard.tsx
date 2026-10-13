@@ -1,4 +1,6 @@
 "use client";
+import { performance } from "@/lib/history";
+import { Performance } from "./performance";
 import { Journey } from "./journey";
 import { JournalEditor } from "./journal";
 import { GrowthBackdrop } from "./growth-art";
@@ -84,7 +86,7 @@ import {
 type Tab = "home" | "stats" | "records" | "growth" | "settings";
 const tabs = [
   { id: "home" as Tab, name: "상태창", icon: LayoutDashboard },
-  { id: "stats" as Tab, name: "나의 스탯", icon: Shield },
+  { id: "stats" as Tab, name: "나의 능력치", icon: Shield },
   { id: "records" as Tab, name: "나의 기록", icon: ListPlus },
   { id: "growth" as Tab, name: "성장 분석", icon: ChartIcon },
   { id: "settings" as Tab, name: "설정", icon: Settings },
@@ -406,6 +408,8 @@ export default function Dashboard() {
     else setRecord({ metric: m });
   }
   function metricCard(m: Metric) {
+    const recentPerformance =
+      m.kind === "best" ? performance(m, data.entries) : null;
     const a = aggregate(m, periodEntries(data.entries, m.id, current));
     const b = aggregate(m, periodEntries(data.entries, m.id, previous));
     const delta = a !== null && b !== null ? a - b : null;
@@ -453,6 +457,13 @@ export default function Dashboard() {
             </>
           )}
         </div>
+        {recentPerformance?.latest && (
+          <div className="recent-performance">
+            최근 {fmt(recentPerformance.latest.value)} {m.unit} · 역대 최고{" "}
+            {fmt(recentPerformance.best)} {m.unit}
+            <small>{recentPerformance.latest.date} 기준</small>
+          </div>
+        )}
         <div className="stat-mini">
           {m.kind === "measure"
             ? "최근 측정값"
@@ -645,7 +656,7 @@ export default function Dashboard() {
                   : tab === "records"
                     ? "나의 기록"
                     : tab === "stats"
-                      ? "나의 스탯"
+                      ? "나의 능력치"
                       : tab === "growth"
                         ? "성장 분석"
                         : "나의 설정"}
@@ -775,7 +786,7 @@ export default function Dashboard() {
               <div className="section-head growth-head">
                 <div>
                   <h2>
-                    나의 성장 스냅샷{" "}
+                    나의 성장 변화 요약{" "}
                     <span className="count">{snapshots.length}</span>
                   </h2>
                   <p className="muted">
@@ -818,7 +829,7 @@ export default function Dashboard() {
                 </div>
                 <div>
                   <select
-                    aria-label="스냅샷 분류"
+                    aria-label="변화 요약 분류"
                     value={snapshotCategory}
                     onChange={(e) => {
                       setSnapshotCategory(e.target.value);
@@ -844,7 +855,7 @@ export default function Dashboard() {
                       )
                     }
                   >
-                    <Settings size={14} /> 스냅샷 편집
+                    <Settings size={14} /> 변화 요약 편집
                   </button>
                 </div>
               </div>
@@ -857,7 +868,7 @@ export default function Dashboard() {
                     <ChartIcon />
                     <h3>
                       {active.length
-                        ? "조건에 맞는 스냅샷이 없어요"
+                        ? "조건에 맞는 변화 요약이 없어요"
                         : "아직 비어 있는 나의 상태창"}
                     </h3>
                     <p>
@@ -930,7 +941,7 @@ export default function Dashboard() {
               >
                 <Shield size={18} />
                 <span>
-                  <strong>상세 스탯창 열기</strong>
+                  <strong>상세 능력치창 열기</strong>
                   <small>
                     활동의 균형, 연속 기록, 모든 성장 지표를 확인하세요.
                   </small>
@@ -1102,7 +1113,7 @@ export default function Dashboard() {
                   >
                     <BookOpen size={20} />
                     <span>
-                      <strong>추천 활동 라이브러리</strong>
+                      <strong>추천 활동 모음</strong>
                       <small>
                         걷기, 학습, 수면 준비 등 나에게 맞는 활동을 골라보세요.
                       </small>
@@ -1369,27 +1380,28 @@ export default function Dashboard() {
                 <span className="eyebrow">PERSONAL GROWTH · BETA</span>
                 <h2>서비스와 데이터 안내</h2>
                 <p>
-                  개인 기록을 위한 베타 버전이에요. 공개 순위나 기록 공개 기능은
-                  없어요. 중요한 기록은 JSON으로 따로 백업해주세요.
+                  개인 기록을 위한 시험 운영 버전이에요. 공개 순위나 기록 공개
+                  기능은 없어요. 중요한 기록은 JSON으로 따로 백업해주세요.
                 </p>
                 <details>
                   <summary>내 기록은 어디에 저장되나요?</summary>
                   <p>
-                    활동·사진·회고는 이 브라우저에 저장돼요. 로그아웃해도 이
+                    활동·사진·일기는 이 브라우저에 저장돼요. 로그아웃해도 이
                     기기의 기록은 남으므로 공용 기기에서는 사용에 주의해주세요.
                     계정을 연결하면 이메일은 Supabase 인증 서비스에, 기록은
                     Supabase 데이터베이스에 보관돼요. 다른 일반 계정은 내 기록을
-                    볼 수 없지만, 종단간 암호화 일기장은 아니에요.
+                    볼 수 없지만, 운영자도 내용을 볼 수 없도록 암호화하는 방식은
+                    아니에요.
                   </p>
                   <p>
-                    JSON 백업에는 회고와 사진이 포함되고 CSV는 활동 기록만
+                    JSON 백업에는 일기와 사진이 포함되고 CSV는 활동 기록만
                     포함해요. 전체 데이터 삭제 후에는 동기화 완료를
                     확인해주세요. 이 기능은 인증 계정이나 서비스 백업까지
                     삭제하는 계정 탈퇴 기능이 아니에요.
                   </p>
                 </details>
                 <details>
-                  <summary>베타의 현재 범위와 문의</summary>
+                  <summary>시험 운영 범위와 문의</summary>
                   <p>
                     이메일을 통한 비밀번호 복구, 자동 계정 탈퇴, 운영 정책과
                     대규모 사용 검증은 아직 준비 중이에요. 정식 공개 서비스로
@@ -1647,7 +1659,7 @@ export default function Dashboard() {
                 </button>
                 <hr />
                 <p className="form-hint">
-                  전체 삭제 전 JSON 백업을 다운로드해주세요. 회고·사진도 삭제
+                  전체 삭제 전 JSON 백업을 다운로드해주세요. 일기·사진도 삭제
                   대상이며, 동기화 연결 중이면 클라우드에도 반영됩니다. 계정
                   탈퇴와는 다릅니다.
                 </p>
@@ -1656,7 +1668,7 @@ export default function Dashboard() {
                   onClick={() =>
                     setConfirm({
                       title: "전체 데이터 삭제",
-                      message: `항목 ${data.metrics.length}개, 기록 ${data.entries.length}개, 회고 ${data.journals?.length ?? 0}개를 삭제합니다. 동기화가 연결되어 있으면 클라우드에도 반영됩니다. 로그인 계정은 삭제되지 않습니다. 백업 없이는 복구할 수 없습니다.`,
+                      message: `항목 ${data.metrics.length}개, 기록 ${data.entries.length}개, 일기 ${data.journals?.length ?? 0}개를 삭제합니다. 동기화가 연결되어 있으면 클라우드에도 반영됩니다. 로그인 계정은 삭제되지 않습니다. 백업 없이는 복구할 수 없습니다.`,
                       action: async () => {
                         if (
                           await commit(emptyData(), "데이터를 초기화했어요")
@@ -1717,11 +1729,11 @@ export default function Dashboard() {
       )}
       {journalDate && (
         <Modal
-          title="하루 회고"
+          title="하루 일기"
           close={() => {
             if (
               window.confirm(
-                "회고 창을 닫을까요? 저장하지 않은 내용은 사라져요.",
+                "일기 창을 닫을까요? 저장하지 않은 내용은 사라져요.",
               )
             )
               setJournalDate(null);
@@ -1740,7 +1752,7 @@ export default function Dashboard() {
               if (journal) journals.push(journal);
               const saved = await commit(
                 { ...data, journals },
-                journal ? "회고를 저장했어요" : "회고를 삭제했어요",
+                journal ? "일기를 저장했어요" : "일기를 삭제했어요",
               );
               if (saved) setJournalDate(null);
               return saved;
@@ -1779,8 +1791,8 @@ export default function Dashboard() {
             </button>
           </div>
           <p className="form-hint">
-            추천은 걷기·회상 학습·다음 행동 계획 3개로 작게 시작합니다. 측정
-            항목과 활동은 자유롭게 선택하세요.
+            추천은 걷기·배운 내용 떠올리기·다음에 할 일 정하기 3개로 작게
+            시작합니다. 측정 항목과 활동은 자유롭게 선택하세요.
           </p>
           <div className="preset-list">
             {presets.map((p, i) => (
@@ -1830,10 +1842,7 @@ export default function Dashboard() {
         </Modal>
       )}
       {practiceModal && (
-        <Modal
-          title="추천 활동 라이브러리"
-          close={() => setPracticeModal(false)}
-        >
+        <Modal title="추천 활동 모음" close={() => setPracticeModal(false)}>
           <PracticePicker
             data={data}
             busy={busy}
@@ -1871,7 +1880,7 @@ export default function Dashboard() {
         </Modal>
       )}
       {snapshotEdit && (
-        <Modal title="성장 스냅샷 편집" close={() => setSnapshotEdit(null)}>
+        <Modal title="성장 변화 요약 편집" close={() => setSnapshotEdit(null)}>
           <p className="modal-description">
             첫 화면에 고정할 항목을 최대 {MAX_PINNED}개 골라주세요. 순서는 기록
             화면에서 변경할 수 있어요.
@@ -1925,13 +1934,13 @@ export default function Dashboard() {
                         pinned: !m.archived && snapshotEdit.includes(m.id),
                       })),
                     },
-                    "스냅샷을 변경했어요",
+                    "변화 요약을 변경했어요",
                   )
                 )
                   setSnapshotEdit(null);
               }}
             >
-              스냅샷 저장
+              변화 요약 저장
             </button>
           </div>
         </Modal>
@@ -2519,6 +2528,7 @@ function MetricDetail({
             ? ` · 개인 최고 ${fmt(aggregate(metric, list))} ${metric.unit}`
             : ""}
         </p>
+        <Performance metric={metric} entries={data.entries} />
         {entries.length ? (
           <>
             <div

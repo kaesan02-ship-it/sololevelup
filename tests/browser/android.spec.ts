@@ -75,7 +75,7 @@ for (const size of [
     }
     await page
       .locator(".mobile-nav")
-      .getByRole("button", { name: "나의 스탯", exact: true })
+      .getByRole("button", { name: "나의 능력치", exact: true })
       .tap();
     await expect(page.locator(".radar-container")).toBeVisible();
     expect(
@@ -139,17 +139,19 @@ test("default starter routines, evidence library, XP ledger and added balance ax
     .locator(".sidebar")
     .getByRole("button", { name: "나의 기록", exact: true })
     .click();
-  await page.getByRole("button", { name: "추천 활동 라이브러리" }).click();
+  await page.getByRole("button", { name: "추천 활동 모음" }).click();
   const modal = page.getByRole("dialog");
   await modal.getByRole("checkbox", { name: /수면 준비/ }).check();
-  await modal.getByRole("checkbox", { name: /마음챙김 휴식/ }).check();
-  await modal.getByRole("checkbox", { name: /의미 있는 안부/ }).check();
+  await modal.getByRole("checkbox", { name: /호흡에 집중하며 쉬기/ }).check();
+  await modal
+    .getByRole("checkbox", { name: /가까운 사람에게 안부 묻기/ })
+    .check();
   await modal.getByRole("button", { name: "근거와 적용 범위" }).first().click();
   await expect(modal.locator(".practice-evidence")).toContainText("일반 지침");
   await modal.getByRole("button", { name: "선택한 3개 활동 추가" }).click();
   await page
     .locator(".sidebar")
-    .getByRole("button", { name: "나의 스탯", exact: true })
+    .getByRole("button", { name: "나의 능력치", exact: true })
     .click();
   await expect(page.locator(".recharts-polar-angle-axis-tick")).toHaveCount(6);
   await page
@@ -167,7 +169,7 @@ test("default starter routines, evidence library, XP ledger and added balance ax
     .getByRole("button", { name: "나의 기록", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "마음챙김 휴식", exact: true }),
+    page.getByRole("heading", { name: "호흡에 집중하며 쉬기", exact: true }),
   ).toBeVisible();
 });
 

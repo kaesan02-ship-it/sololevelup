@@ -17,9 +17,9 @@ test("reflection persists by date, is escaped, survives backup and can be delete
   await page
     .getByLabel("다음의 작은 행동", { exact: true })
     .fill("점심 후 한 바퀴");
-  await page.getByRole("button", { name: "회고 저장", exact: true }).click();
+  await page.getByRole("button", { name: "일기 저장", exact: true }).click();
   await expect(
-    page.getByText("회고를 저장했어요", { exact: true }),
+    page.getByText("일기를 저장했어요", { exact: true }),
   ).toBeVisible();
   await expect(page.locator(".hero-level-pill")).toContainText("1");
   await page.reload();
@@ -50,13 +50,13 @@ test("reflection persists by date, is escaped, survives backup and can be delete
   await page.getByRole("button", { name: "날짜별 보기", exact: true }).click();
   await page.getByLabel("조회 날짜", { exact: true }).fill("2026-01-01");
   await expect(page.locator(".daily-journal")).not.toContainText("작은 산책");
-  await page.getByRole("button", { name: "회고 남기기", exact: true }).click();
+  await page.getByRole("button", { name: "일기 남기기", exact: true }).click();
   await page.getByLabel("오늘 잘한 일", { exact: true }).fill("지난날");
-  await page.getByRole("button", { name: "회고 저장", exact: true }).click();
+  await page.getByRole("button", { name: "일기 저장", exact: true }).click();
   await expect(page.locator(".daily-journal")).toContainText("지난날");
-  await page.getByRole("button", { name: "회고 수정", exact: true }).click();
+  await page.getByRole("button", { name: "일기 수정", exact: true }).click();
   page.once("dialog", (d) => d.accept());
-  await page.getByRole("button", { name: "회고 삭제", exact: true }).click();
+  await page.getByRole("button", { name: "일기 삭제", exact: true }).click();
   await expect(page.locator(".daily-journal")).not.toContainText("지난날");
 });
 
@@ -136,25 +136,25 @@ test("an open reflection draft cannot overwrite a newer save in another tab", as
     .click();
   await second
     .getByLabel("오늘 잘한 일", { exact: true })
-    .fill("다른 탭의 최신 회고");
-  await second.getByRole("button", { name: "회고 저장", exact: true }).click();
-  await page.getByRole("button", { name: "회고 저장", exact: true }).click();
+    .fill("다른 탭의 최신 일기");
+  await second.getByRole("button", { name: "일기 저장", exact: true }).click();
+  await page.getByRole("button", { name: "일기 저장", exact: true }).click();
   await expect(page.getByLabel("오늘 잘한 일", { exact: true })).toHaveValue(
     "첫 탭의 초안",
   );
   await expect(page.locator('.journal-editor [role="alert"]')).toContainText(
     "저장하지 못했어요",
   );
-  await page.getByRole("button", { name: "회고 저장", exact: true }).click();
+  await page.getByRole("button", { name: "일기 저장", exact: true }).click();
   await expect(page.locator('.journal-editor [role="alert"]')).toContainText(
     "다른 탭이나 기기",
   );
   await second.reload();
   await second
-    .getByRole("button", { name: "오늘의 회고 돌아보기", exact: false })
+    .getByRole("button", { name: "오늘의 일기 돌아보기", exact: false })
     .click();
   await expect(second.getByLabel("오늘 잘한 일", { exact: true })).toHaveValue(
-    "다른 탭의 최신 회고",
+    "다른 탭의 최신 일기",
   );
 });
 
@@ -170,12 +170,10 @@ test("journey and reflection stay usable on narrow touch screens", async ({
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
-  await page
-    .locator(".journey-panel")
-    .screenshot({
-      path: "docs/preview-journey-mobile.png",
-      style: ".mobile-nav, .toast { visibility: hidden; }",
-    });
+  await page.locator(".journey-panel").screenshot({
+    path: "docs/preview-journey-mobile.png",
+    style: ".mobile-nav, .toast { visibility: hidden; }",
+  });
   await page
     .getByRole("button", {
       name: "오늘을 한 문장으로 남겨볼까요?",
@@ -183,7 +181,7 @@ test("journey and reflection stay usable on narrow touch screens", async ({
     })
     .click();
   await expect(
-    page.getByRole("button", { name: "회고 저장", exact: true }),
+    page.getByRole("button", { name: "일기 저장", exact: true }),
   ).toBeVisible();
   expect(
     await page
@@ -196,8 +194,8 @@ test("journey and reflection stay usable on narrow touch screens", async ({
   await page
     .locator(".modal")
     .screenshot({ path: "docs/preview-journal-mobile.png" });
-  await page.getByRole("button", { name: "회고 저장", exact: true }).click();
+  await page.getByRole("button", { name: "일기 저장", exact: true }).click();
   await expect(
-    page.getByText("회고를 저장했어요", { exact: true }),
+    page.getByText("일기를 저장했어요", { exact: true }),
   ).toBeVisible();
 });

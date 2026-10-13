@@ -6,7 +6,7 @@ import type { Data } from "@/lib/model";
 const sourceKinds = {
   guideline: "일반 지침",
   review: "연구 종합",
-  "meta-analysis": "메타분석",
+  "meta-analysis": "여러 연구 결과를 합쳐 분석",
   observational: "관찰 연구 종합",
   book: "실용서",
 };

@@ -1,6 +1,7 @@
 "use client";
 import { XpRing } from "./growth-art";
-import { useEffect, useRef, useState } from "react";
+import { HistoryCalendar } from "./history-calendar";
+import { useState } from "react";
 import {
   Activity,
   ArrowRight,
@@ -55,13 +56,7 @@ export function StatsPage({
   color: (metric: Metric) => string;
   onXp: () => void;
 }) {
-  const calendarRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (calendarRef.current)
-      calendarRef.current.scrollLeft = calendarRef.current.scrollWidth;
-  }, []);
-  const [category, setCategory] = useState("all"),
-    [selectedDate, setSelectedDate] = useState(date);
+  const [category, setCategory] = useState("all");
   const summary = summarize(data, date, days),
     categories = categoryActivity(data, date, days),
     active = data.metrics.filter((m) => !m.archived),
@@ -74,9 +69,7 @@ export function StatsPage({
     )
     .slice(0, 8);
   const selectedAxes = displayedAxes.map((c) => c.id);
-  const historyDates = range(date, 84),
-    period = range(date, days);
-  const records = data.entries.filter((e) => e.date === selectedDate);
+  const period = range(date, days);
   const visible = active.filter(
     (m) => category === "all" || m.categoryId === category,
   );
@@ -169,7 +162,7 @@ export function StatsPage({
       </div>
       <div className="section-head stats-period-head">
         <div>
-          <h2>분류별 활동 스탯</h2>
+          <h2>분류별 활동 기록</h2>
           <p className="muted">
             {period[0]} – {date} · 기록한 날 비율
           </p>
@@ -407,101 +400,12 @@ export function StatsPage({
           </div>
         )}
       </section>
-      <section className="panel activity-calendar">
-        <div className="section-head">
-          <h2>나의 기록 캘린더</h2>
-          <span className="muted">최근 84일 · 날짜를 누르면 기록 확인</span>
-        </div>
-        <div className="date-navigation stats-date-navigation">
-          <label>
-            조회 날짜
-            <input
-              type="date"
-              aria-label="캘린더 조회 날짜"
-              min="0001-01-01"
-              max={date}
-              value={selectedDate}
-              onChange={(e) => {
-                if (e.target.value && e.target.validity.valid)
-                  setSelectedDate(e.target.value);
-              }}
-            />
-          </label>
-          <button className="secondary" onClick={() => setSelectedDate(date)}>
-            오늘 기록
-          </button>
-        </div>
-        <p className="form-hint">
-          84일 이전 기록도 날짜를 직접 선택하면 볼 수 있어요.
-        </p>
-        <div className="calendar-scroll" ref={calendarRef}>
-          <div className="calendar-grid">
-            {historyDates.map((d) => {
-              const count = data.entries.filter((e) => e.date === d).length;
-              return (
-                <button
-                  key={d}
-                  className={
-                    "calendar-day intensity-" +
-                    Math.min(3, count) +
-                    " " +
-                    (selectedDate === d ? "selected" : "")
-                  }
-                  aria-label={`${d} 기록 ${count}개`}
-                  title={`${d} · 기록 ${count}개`}
-                  onClick={() => setSelectedDate(d)}
-                />
-              );
-            })}
-          </div>
-        </div>
-        <div className="calendar-caption">
-          <span>
-            {historyDates[0]} – {date}
-          </span>
-          <span>
-            기록 적음 <i className="intensity-0" />
-            <i className="intensity-1" />
-            <i className="intensity-2" />
-            <i className="intensity-3" /> 많음
-          </span>
-        </div>
-        <div className="day-records">
-          <h3>
-            {selectedDate} <span>{records.length}개 기록</span>
-          </h3>
-          {records.length ? (
-            records.map((e) => {
-              const metric = data.metrics.find((m) => m.id === e.metricId);
-              return (
-                metric && (
-                  <button
-                    key={e.id}
-                    className="day-record-row"
-                    onClick={() => onMetric(metric.id)}
-                  >
-                    <span>{metric.name}</span>
-                    <strong>
-                      {metric.kind === "check"
-                        ? "완료"
-                        : `${fmt(e.value)} ${metric.unit}`}
-                    </strong>
-                    {e.note && <small>{e.note}</small>}
-                    <ArrowRight size={14} />
-                  </button>
-                )
-              );
-            })
-          ) : (
-            <p className="form-hint">선택한 날짜에 기록이 없어요.</p>
-          )}
-        </div>
-      </section>
+      <HistoryCalendar data={data} today={date} onMetric={onMetric} />
       <section id="all-stats" className="panel all-stats">
         <div className="section-head">
-          <h2>전체 상세 지표</h2>
+          <h2>전체 항목의 기록</h2>
           <select
-            aria-label="스탯 분류 필터"
+            aria-label="능력치 분류 필터"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           >
@@ -541,6 +445,11 @@ export function StatsPage({
                     ? ` · 개인 최고 ${fmt(stat.best)} ${m.unit}`
                     : ""}
                 </small>
+                {m.kind === "best" && stat.latest && (
+                  <small>
+                    최근 {fmt(stat.latest.value)} {m.unit} · {stat.latest.date}
+                  </small>
+                )}
               </button>
               <span className="metric-table-value">
                 {fmt(stat.now)} <small>{m.unit}</small>
@@ -557,7 +466,7 @@ export function StatsPage({
                 className="secondary"
                 onClick={() => onRecord(m)}
                 aria-pressed={m.kind === "check" ? done : undefined}
-                aria-label={`${m.name} 스탯에서 기록`}
+                aria-label={`${m.name} 능력치에서 기록`}
               >
                 {m.kind === "check"
                   ? done

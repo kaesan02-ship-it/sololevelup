@@ -274,11 +274,11 @@ test("two devices sync, preserve offline edits and stop on conflicts", async ({
     .click();
   await first
     .getByLabel("오늘 잘한 일", { exact: true })
-    .fill("두 기기에 이어지는 회고");
-  await first.getByRole("button", { name: "회고 저장", exact: true }).click();
+    .fill("두 기기에 이어지는 일기");
+  await first.getByRole("button", { name: "일기 저장", exact: true }).click();
   await expect
     .poll(() => remote?.payload.journals?.[0]?.win)
-    .toBe("두 기기에 이어지는 회고");
+    .toBe("두 기기에 이어지는 일기");
   await second
     .locator(".sidebar")
     .getByRole("button", { name: "설정", exact: true })
@@ -305,7 +305,7 @@ test("two devices sync, preserve offline edits and stop on conflicts", async ({
   holdSecondRead = null;
   finishJournalRead();
   await expect(second.getByLabel("오늘 잘한 일", { exact: true })).toHaveValue(
-    "두 기기에 이어지는 회고",
+    "두 기기에 이어지는 일기",
   );
   await a.close();
   await b.close();

@@ -298,6 +298,18 @@ export function normalizeProfile(data: Data): Data {
   const photo = parsePhoto(data.profile.photo);
   return {
     ...data,
+    metrics: data.metrics.map((metric) => {
+      const originalNames: Record<string, string> = {
+        retrieval: "회상 학습",
+        "mindful-pause": "마음챙김 휴식",
+        connection: "의미 있는 안부",
+        "next-action": "다음 행동 계획",
+      };
+      const practice = practices.find((p) => p.id === metric.practiceId);
+      return practice && metric.name === originalNames[practice.id]
+        ? { ...metric, name: practice.name }
+        : metric;
+    }),
     profile: {
       nickname: data.profile.nickname,
       timezone: data.profile.timezone,
@@ -328,7 +340,7 @@ export function validateBackup(input: unknown): Data {
   const now = today("Pacific/Kiritimati");
   if (d.journals !== undefined) {
     if (!Array.isArray(d.journals))
-      throw Error("회고 형식이 올바르지 않습니다.");
+      throw Error("일기 형식이 올바르지 않습니다.");
     const journalDates = new Set<string>();
     for (const journal of d.journals) {
       if (
@@ -350,7 +362,7 @@ export function validateBackup(input: unknown): Data {
         typeof journal.updatedAt !== "string" ||
         !Number.isFinite(Date.parse(journal.updatedAt))
       )
-        throw Error("회고의 날짜나 내용이 올바르지 않습니다.");
+        throw Error("일기의 날짜나 내용이 올바르지 않습니다.");
       journalDates.add(journal.date);
     }
   }

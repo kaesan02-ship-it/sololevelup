@@ -111,7 +111,7 @@ export function Journey({
         <span>
           <strong>
             {journal
-              ? "오늘의 회고 돌아보기"
+              ? "오늘의 일기 돌아보기"
               : "오늘을 한 문장으로 남겨볼까요?"}
           </strong>
           <small>선택 기록 · 잘한 일과 다음의 작은 행동</small>

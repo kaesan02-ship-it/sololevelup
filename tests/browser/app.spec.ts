@@ -253,10 +253,10 @@ test("sample records render period comparisons, goals and preview images", async
   await page.screenshot({ path: "docs/preview-mobile.png" });
   await page
     .locator(".mobile-nav")
-    .getByRole("button", { name: "나의 스탯", exact: true })
+    .getByRole("button", { name: "나의 능력치", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "나의 스탯", exact: true }),
+    page.getByRole("heading", { name: "나의 능력치", exact: true }),
   ).toBeVisible();
   await page.screenshot({
     path: "docs/preview-stats-mobile.png",
@@ -481,7 +481,7 @@ test("snapshot editing supports six favorites, filters and detailed stat actions
     .getByRole("button", { name: "기본 측정 세트 선택", exact: true })
     .click();
   await page.getByRole("button", { name: "나의 여정 시작하기" }).click();
-  await page.getByRole("button", { name: "스냅샷 편집" }).click();
+  await page.getByRole("button", { name: "변화 요약 편집" }).click();
   await page
     .getByRole("dialog")
     .getByRole("checkbox", { name: /골격근량/ })
@@ -490,22 +490,22 @@ test("snapshot editing supports six favorites, filters and detailed stat actions
     .getByRole("dialog")
     .getByRole("checkbox", { name: /집중 공부/ })
     .check();
-  await page.getByRole("button", { name: "스냅샷 저장" }).click();
+  await page.getByRole("button", { name: "변화 요약 저장" }).click();
   await expect(page.locator(".snapshot-grid .stat-card")).toHaveCount(6);
   await page.reload();
   await expect(page.locator(".snapshot-grid .stat-card")).toHaveCount(6);
-  await page.getByLabel("스냅샷 분류").selectOption("learn");
+  await page.getByLabel("변화 요약 분류").selectOption("learn");
   await expect(page.locator(".snapshot-grid .stat-card")).toHaveCount(2);
-  await page.getByLabel("스냅샷 분류").selectOption("all");
+  await page.getByLabel("변화 요약 분류").selectOption("all");
   await page.getByRole("button", { name: "최근 기록", exact: true }).click();
   await expect(page.locator(".snapshot-grid .stat-card")).toHaveCount(0);
   await page.getByRole("button", { name: "독서 기록", exact: true }).click();
   await page.getByLabel("기록값 · 쪽").fill("25");
   await page.getByRole("button", { name: "기록 저장" }).click();
   await expect(page.locator(".snapshot-grid .stat-card")).toHaveCount(1);
-  await page.getByRole("button", { name: "상세 스탯창 열기" }).click();
+  await page.getByRole("button", { name: "상세 능력치창 열기" }).click();
   await expect(
-    page.getByRole("heading", { name: "나의 스탯", exact: true }),
+    page.getByRole("heading", { name: "나의 능력치", exact: true }),
   ).toBeVisible();
   await expect(
     page.locator(".overview-card").filter({ hasText: "전체 기록" }),
@@ -514,12 +514,12 @@ test("snapshot editing supports six favorites, filters and detailed stat actions
   const row = page.locator(".metric-table-row").filter({
     has: page.locator(".metric-table-name").filter({ hasText: "독서" }),
   });
-  await row.getByRole("button", { name: "독서 스탯에서 기록" }).click();
+  await row.getByRole("button", { name: "독서 능력치에서 기록" }).click();
   await page.getByLabel("기록값 · 쪽").fill("5");
   await page.getByRole("button", { name: "기록 저장" }).click();
   await expect(row.locator(".metric-table-value")).toContainText("30");
   const check = page.getByRole("button", {
-    name: "스트레칭 스탯에서 기록",
+    name: "스트레칭 능력치에서 기록",
     exact: true,
   });
   await check.click();
@@ -700,7 +700,7 @@ test("daily history adds and edits past records and opens dates older than the c
   await expect(page.locator(".daily-entry")).toContainText("15 분");
   await page
     .locator(".mobile-nav")
-    .getByRole("button", { name: "나의 스탯", exact: true })
+    .getByRole("button", { name: "나의 능력치", exact: true })
     .click();
   await page.getByLabel("캘린더 조회 날짜").fill("2025-01-02");
   await expect(page.locator(".day-records")).toContainText("15 분");

@@ -4169,3 +4169,186 @@ textarea {
   word-break: keep-all;
   overflow-wrap: anywhere;
 }
+
+/* More solid surfaces and type, retaining the existing light palette. */
+.panel,
+.stat-card,
+.hero {
+  border-width: 2px;
+  box-shadow: 0 4px 14px #44375b09;
+}
+.panel h2,
+.section-head h2,
+.page-heading h1 {
+  font-weight: 750;
+  letter-spacing: -0.035em;
+}
+.primary,
+.secondary,
+.quest strong,
+.stat-value,
+.overview-card strong {
+  font-weight: 650;
+}
+.secondary,
+.quest,
+.journey-stages li,
+.journal-invite,
+input,
+select,
+textarea {
+  border-width: 2px;
+}
+.mobile-nav {
+  border-top-width: 2px;
+}
+.mobile-nav svg,
+.sidebar nav svg,
+.section-head svg {
+  stroke-width: 2.3;
+}
+.history-lifetime {
+  font-size: 17px;
+  font-weight: 650;
+  line-height: 1.6;
+}
+.history-controls,
+.history-year {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.history-controls label,
+.history-year label {
+  margin: 0;
+}
+.history-controls input {
+  min-width: 150px;
+}
+.year-months {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin: 18px 0;
+}
+.year-months button {
+  border: 2px solid #e8e1f0;
+  border-radius: 10px;
+  background: #faf8fc;
+  padding: 10px 4px;
+  min-height: 56px;
+  color: #625171;
+}
+.year-months span,
+.year-months strong {
+  display: block;
+}
+.year-months span {
+  font-size: 12px;
+  margin-top: 4px;
+}
+.year-months .selected {
+  border-color: #a588c5;
+  background: #efe7f7;
+}
+.month-calendar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+  margin: 20px 0;
+}
+.month-calendar .weekday {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 0;
+}
+.month-calendar .calendar-day {
+  min-width: 0;
+  height: 62px;
+  border-width: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #50425e;
+}
+.month-calendar small {
+  font-size: 10px;
+  min-height: 12px;
+}
+.performance-summary {
+  padding: 18px;
+  margin: 18px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  border: 2px solid #e2d7ef;
+  border-radius: 14px;
+  background: #fbf9fd;
+}
+.performance-summary strong {
+  display: block;
+  font-size: 24px;
+  margin-top: 8px;
+}
+.performance-summary small {
+  font-size: 12px;
+  font-weight: 500;
+}
+.performance-summary p {
+  grid-column: 1 / -1;
+  line-height: 1.8;
+  margin: 0;
+  font-size: 13px;
+  word-break: keep-all;
+}
+.daily-journal p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
+@media (max-width: 720px) {
+  .year-months {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .month-calendar {
+    gap: 3px;
+  }
+  .month-calendar .calendar-day {
+    height: 52px;
+  }
+  .history-controls {
+    gap: 5px;
+  }
+  .history-controls > .secondary {
+    flex-basis: 100%;
+  }
+  .history-controls label {
+    flex: 1;
+    min-width: 0;
+  }
+  .history-controls input {
+    min-width: 0;
+    width: 100%;
+  }
+  .performance-summary {
+    padding: 14px;
+  }
+}
+.recent-performance {
+  margin-top: 14px;
+  font-weight: 650;
+  line-height: 1.7;
+  font-size: 13px;
+  color: #655176;
+}
+.recent-performance small {
+  display: block;
+  font-size: 11px;
+  font-weight: 450;
+  color: #777080;
+}

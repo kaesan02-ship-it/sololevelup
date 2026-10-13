@@ -49,7 +49,7 @@ export function JournalEditor({
         e.preventDefault();
         if (changedElsewhere) {
           setMessage(
-            "다른 탭이나 기기에서 이 날짜의 회고가 바뀌었어요. 입력한 내용을 복사해둔 뒤 닫고 다시 열어 최신 내용을 확인해주세요.",
+            "다른 탭이나 기기에서 이 날짜의 일기가 바뀌었어요. 입력한 내용을 복사해둔 뒤 닫고 다시 열어 최신 내용을 확인해주세요.",
           );
           return;
         }
@@ -109,7 +109,7 @@ export function JournalEditor({
         />
       </label>
       <p className="form-hint">
-        회고는 XP를 지급하지 않아요. JSON 백업과 연결한 계정의 동기화에
+        일기는 XP를 지급하지 않아요. JSON 백업과 연결한 계정의 동기화에
         포함됩니다. 백업 파일에도 내용이 담겨요.
       </p>
       {message && (
@@ -119,7 +119,7 @@ export function JournalEditor({
       )}
       <div className="settings-buttons">
         <button className="primary" disabled={busy}>
-          회고 저장
+          일기 저장
         </button>
         {initial && (
           <button
@@ -129,19 +129,19 @@ export function JournalEditor({
             onClick={async () => {
               if (changedElsewhere) {
                 setMessage(
-                  "회고가 다른 곳에서 변경되었어요. 닫고 다시 열어주세요.",
+                  "일기가 다른 곳에서 변경되었어요. 닫고 다시 열어주세요.",
                 );
                 return;
               }
               if (
                 window.confirm(
-                  "이 날짜의 회고를 삭제할까요? 연결된 계정에도 반영됩니다.",
+                  "이 날짜의 일기를 삭제할까요? 연결된 계정에도 반영됩니다.",
                 )
               )
                 await onSave(undefined);
             }}
           >
-            회고 삭제
+            일기 삭제
           </button>
         )}
       </div>
