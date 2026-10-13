@@ -26,6 +26,10 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY }}
       - run: npm run typecheck
+      - name: Install browser for deployment checks
+        run: npx playwright install --with-deps chromium
+      - name: Verify exported mobile app and offline reload
+        run: npm run test:pages
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .next-pages

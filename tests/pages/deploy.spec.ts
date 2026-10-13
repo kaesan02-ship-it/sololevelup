@@ -14,6 +14,12 @@ test("exported subpath loads all assets, records and reloads offline", async ({
   await page.getByLabel("기록값 · 분").fill("10");
   await page.getByRole("button", { name: "기록 저장" }).click();
   await expect(page.getByText("10 분 기록했어요")).toBeVisible();
+  await expect(page.locator(".journey-panel")).toBeVisible();
+  await page.locator(".journal-invite").click();
+  await page
+    .getByLabel("오늘 잘한 일", { exact: true })
+    .fill("배포된 회고 검증");
+  await page.getByRole("button", { name: "회고 저장", exact: true }).click();
   const manifest = await page.evaluate(async () => {
     const link = document.querySelector<HTMLLinkElement>(
       'link[rel="manifest"]',
@@ -56,5 +62,9 @@ test("exported subpath loads all assets, records and reloads offline", async ({
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBeTruthy();
+  await page.locator(".journal-invite").click();
+  await expect(page.getByLabel("오늘 잘한 일", { exact: true })).toHaveValue(
+    "배포된 회고 검증",
+  );
   expect(failures).toEqual([]);
 });

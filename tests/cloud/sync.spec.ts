@@ -65,6 +65,10 @@ test("two devices sync, preserve offline edits and stop on conflicts", async ({
         return;
       }
       if (url.pathname === "/auth/v1/user") {
+        if (request.method() === "PUT") {
+          expect(request.postDataJSON().current_password).toBe("test-password");
+          expect(request.postDataJSON().password).toBe("new-test-password");
+        }
         await route.fulfill({
           status: 200,
           headers,
@@ -140,6 +144,31 @@ test("two devices sync, preserve offline edits and stop on conflicts", async ({
     );
   }
   await login(first);
+  await first.getByText("비밀번호 변경", { exact: true }).click();
+  await first
+    .getByLabel("현재 비밀번호", { exact: true })
+    .fill("test-password");
+  await first
+    .getByLabel("새 비밀번호", { exact: true })
+    .fill("new-test-password");
+  await first
+    .getByLabel("새 비밀번호 확인", { exact: true })
+    .fill("different-password");
+  await first
+    .getByRole("button", { name: "비밀번호 변경 저장", exact: true })
+    .click();
+  await expect(
+    first.getByText("새 비밀번호가 서로 달라요.", { exact: true }),
+  ).toBeVisible();
+  await first
+    .getByLabel("새 비밀번호 확인", { exact: true })
+    .fill("new-test-password");
+  await first
+    .getByRole("button", { name: "비밀번호 변경 저장", exact: true })
+    .click();
+  await expect(
+    first.getByText("비밀번호를 변경했어요.", { exact: true }),
+  ).toBeVisible();
   missingSchema = true;
   await first.getByRole("button", { name: "이 기기의 기록 사용" }).click();
   await expect(first.locator(".sync-panel .install-status")).toHaveText(
@@ -237,6 +266,39 @@ test("two devices sync, preserve offline edits and stop on conflicts", async ({
     .getByRole("button", { name: "상태창", exact: true })
     .click();
   await expect(first.getByText("30 쪽 기록했어요")).toBeVisible();
+  await first
+    .getByRole("button", {
+      name: "오늘을 한 문장으로 남겨볼까요?",
+      exact: false,
+    })
+    .click();
+  await first
+    .getByLabel("오늘 잘한 일", { exact: true })
+    .fill("두 기기에 이어지는 회고");
+  await first.getByRole("button", { name: "회고 저장", exact: true }).click();
+  await expect
+    .poll(() => remote?.payload.journals?.[0]?.win)
+    .toBe("두 기기에 이어지는 회고");
+  await second
+    .locator(".sidebar")
+    .getByRole("button", { name: "설정", exact: true })
+    .click();
+  await second
+    .getByRole("button", { name: "지금 동기화", exact: true })
+    .click();
+  await expect(second.locator(".sync-panel .install-status")).toHaveText(
+    "동기화 완료",
+  );
+  await second
+    .locator(".sidebar")
+    .getByRole("button", { name: "상태창", exact: true })
+    .click();
+  await second
+    .getByRole("button", { name: "오늘의 회고 돌아보기", exact: false })
+    .click();
+  await expect(second.getByLabel("오늘 잘한 일", { exact: true })).toHaveValue(
+    "두 기기에 이어지는 회고",
+  );
   await a.close();
   await b.close();
 });

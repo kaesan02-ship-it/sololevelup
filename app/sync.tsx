@@ -278,7 +278,15 @@ export function SyncPanel({
             className="icon-button"
             aria-label="로그아웃"
             onClick={async () => {
-              await cloudClient()?.auth.signOut();
+              try {
+                const result = await cloudClient()?.auth.signOut();
+                if (result?.error)
+                  setNotice(
+                    "로그아웃하지 못했어요. 연결 상태를 확인하고 다시 시도해주세요.",
+                  );
+              } catch {
+                setNotice("로그아웃하지 못했어요. 다시 시도해주세요.");
+              }
             }}
           >
             <LogOut size={16} />
@@ -320,6 +328,76 @@ export function SyncPanel({
               </button>
             </div>
           )}
+          <details className="password-settings">
+            <summary>비밀번호 변경</summary>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const form = e.currentTarget;
+                const values = new FormData(form);
+                const password = String(values.get("new-password"));
+                if (password !== String(values.get("confirm-password"))) {
+                  setNotice("새 비밀번호가 서로 달라요.");
+                  return;
+                }
+                setBusy(true);
+                setNotice("");
+                try {
+                  const result = await cloudClient()!.auth.updateUser({
+                    password,
+                    current_password: String(values.get("current-password")),
+                  });
+                  if (result.error)
+                    setNotice(
+                      "변경하지 못했어요. 현재 비밀번호와 연결 상태를 확인해주세요.",
+                    );
+                  else {
+                    form.reset();
+                    setNotice("비밀번호를 변경했어요.");
+                  }
+                } catch {
+                  setNotice(
+                    "계정 서비스에 연결하지 못했어요. 다시 시도해주세요.",
+                  );
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            >
+              <label>
+                현재 비밀번호
+                <input
+                  name="current-password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                />
+              </label>
+              <label>
+                새 비밀번호
+                <input
+                  name="new-password"
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                />
+              </label>
+              <label>
+                새 비밀번호 확인
+                <input
+                  name="confirm-password"
+                  type="password"
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                />
+              </label>
+              <button className="secondary" disabled={busy}>
+                비밀번호 변경 저장
+              </button>
+            </form>
+          </details>
           <button
             className="text-button"
             disabled={state.status === "syncing"}

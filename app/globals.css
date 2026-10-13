@@ -3924,3 +3924,242 @@ textarea {
     font-size: 23px;
   }
 }
+
+/* A gentle RPG journey, with the same record rules and no missed-day penalties. */
+.journey-panel {
+  margin-top: 20px;
+  padding: 26px;
+  background: linear-gradient(125deg, #fff 55%, #faf7ff);
+}
+.journey-heading {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+.journey-crest {
+  width: 64px;
+  height: 72px;
+  flex-shrink: 0;
+}
+.journey-heading h2 {
+  font-size: 23px;
+  margin: 6px 0;
+  color: #58436e;
+}
+.journey-heading p {
+  color: #6c6479;
+  margin: 0;
+  line-height: 1.6;
+}
+.journey-stages {
+  padding: 0;
+  margin: 24px 0 16px;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.journey-stages li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 8px;
+  border: 1px solid #ebe7f1;
+  border-radius: 12px;
+  color: #777183;
+  background: #faf9fc;
+}
+.journey-stages li > span {
+  display: flex;
+}
+.journey-stages strong {
+  font-size: 12px;
+  word-break: keep-all;
+}
+.journey-stages small {
+  font-size: 11px;
+}
+.journey-stages .reached {
+  background: #f0e9f8;
+  color: #684592;
+  border-color: #d8c7eb;
+}
+.journey-stages [aria-current="step"] {
+  box-shadow: inset 0 0 0 1px #ab8bc9;
+}
+.quest-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.quest {
+  text-align: left;
+  border: 1px solid #e8e4ef;
+  background: #fff;
+  border-radius: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 14px;
+  min-width: 0;
+  color: #50485d;
+}
+.quest > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.quest strong,
+.quest small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.quest small {
+  font-size: 11px;
+  margin-top: 5px;
+  color: #70697b;
+}
+.quest-check {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #f4effa;
+  flex-shrink: 0;
+}
+.quest.done {
+  border-color: #c7e4d9;
+  background: #f5fbf8;
+}
+.quest.done .quest-check {
+  background: #def1e8;
+  color: #28755c;
+}
+.journal-invite {
+  margin-top: 18px;
+  border: 0;
+  border-radius: 14px;
+  background: #f6f2fb;
+  padding: 16px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  color: #674a88;
+}
+.journal-invite > span {
+  flex: 1;
+}
+.journal-invite strong,
+.journal-invite small {
+  display: block;
+}
+.journal-invite small {
+  margin-top: 5px;
+  line-height: 1.6;
+  color: #766783;
+}
+.journal-editor textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 70px;
+  line-height: 1.7;
+}
+.daily-journal {
+  margin: 18px 0;
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid #e9dff3;
+  background: #fbf9fd;
+}
+.daily-journal dt {
+  font-weight: 600;
+  color: #76568f;
+  margin-top: 14px;
+  font-size: 12px;
+}
+.daily-journal dd {
+  margin: 6px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.8;
+}
+.levelup-card {
+  position: fixed;
+  top: max(18px, env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 90;
+  width: min(440px, calc(100% - 24px));
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #d4bfe9;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 12px 50px #62438026;
+  color: #704797;
+}
+.levelup-card > div {
+  flex: 1;
+}
+.levelup-card p {
+  color: #6a6176;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 7px 0 0;
+}
+.service-notice p {
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.service-notice summary,
+.password-settings summary {
+  padding: 14px 0;
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.service-notice a {
+  color: #715094;
+  text-decoration: underline;
+}
+@media (max-width: 720px) {
+  .journey-panel {
+    padding: 20px 16px;
+  }
+  .journey-crest {
+    width: 48px;
+    height: 56px;
+  }
+  .journey-heading {
+    gap: 12px;
+  }
+  .journey-heading h2 {
+    font-size: 20px;
+  }
+  .journey-heading p {
+    font-size: 12px;
+  }
+  .journey-stages {
+    gap: 5px;
+  }
+  .journey-stages li {
+    padding: 10px 6px;
+  }
+  .journey-stages strong {
+    font-size: 10px;
+    line-height: 1.6;
+  }
+  .quest-list {
+    grid-template-columns: 1fr;
+  }
+  .quest {
+    min-height: 64px;
+  }
+  .daily-journal {
+    padding: 14px;
+  }
+}

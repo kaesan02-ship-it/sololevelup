@@ -27,12 +27,20 @@ export type Entry = {
   createdAt: string;
 };
 export type Category = { id: string; name: string; color: string };
+export type Journal = {
+  date: string;
+  win: string;
+  story: string;
+  next: string;
+  updatedAt: string;
+};
 export type Data = {
   schemaVersion: 1;
   profile: { nickname: string; timezone: string; photo?: string };
   categories: Category[];
   metrics: Metric[];
   entries: Entry[];
+  journals?: Journal[];
   initialized: boolean;
   lastBackup: string | null;
 };
@@ -318,6 +326,34 @@ export function validateBackup(input: unknown): Data {
   // A timezone change must not make a previously valid local date unimportable.
   today(d.profile.timezone); // Validate the configured timezone.
   const now = today("Pacific/Kiritimati");
+  if (d.journals !== undefined) {
+    if (!Array.isArray(d.journals))
+      throw Error("회고 형식이 올바르지 않습니다.");
+    const journalDates = new Set<string>();
+    for (const journal of d.journals) {
+      if (
+        !journal ||
+        typeof journal.date !== "string" ||
+        !/^\d{4}-\d{2}-\d{2}$/.test(journal.date) ||
+        !Number.isFinite(Date.parse(journal.date)) ||
+        new Date(journal.date + "T12:00:00Z").toISOString().slice(0, 10) !==
+          journal.date ||
+        journal.date > now ||
+        journalDates.has(journal.date) ||
+        typeof journal.win !== "string" ||
+        journal.win.length > 300 ||
+        typeof journal.story !== "string" ||
+        journal.story.length > 2000 ||
+        typeof journal.next !== "string" ||
+        journal.next.length > 300 ||
+        !(journal.win.trim() || journal.story.trim() || journal.next.trim()) ||
+        typeof journal.updatedAt !== "string" ||
+        !Number.isFinite(Date.parse(journal.updatedAt))
+      )
+        throw Error("회고의 날짜나 내용이 올바르지 않습니다.");
+      journalDates.add(journal.date);
+    }
+  }
   const ids = new Set<string>();
   for (const list of [d.categories, d.metrics, d.entries])
     for (const item of list) {

@@ -20,16 +20,19 @@ export function DailyRecords({
   today,
   onRecord,
   onEdit,
+  onJournal,
 }: {
   data: Data;
   today: string;
   onRecord: (metric: Metric, date: string) => void;
   onEdit: (metric: Metric, entry: Entry) => void;
+  onJournal: (date: string) => void;
 }) {
   const [selectedDate, setSelectedDate] = useState(today);
   const active = data.metrics.filter((m) => !m.archived);
   const [metricId, setMetricId] = useState(active[0]?.id ?? "");
   const selectedMetric = active.find((m) => m.id === metricId) ?? active[0];
+  const journal = data.journals?.find((j) => j.date === selectedDate);
   const entries = data.entries
     .filter((e) => e.date === selectedDate)
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
@@ -90,6 +93,38 @@ export function DailyRecords({
           경험치 <strong>{xpBreakdown(data, selectedDate).total} XP</strong>
         </span>
       </div>
+      <article className="daily-journal">
+        <div className="section-head">
+          <h3>이날의 회고</h3>
+          <button className="secondary" onClick={() => onJournal(selectedDate)}>
+            {journal ? "회고 수정" : "회고 남기기"}
+          </button>
+        </div>
+        {journal ? (
+          <dl>
+            {journal.win && (
+              <>
+                <dt>오늘 잘한 일</dt>
+                <dd>{journal.win}</dd>
+              </>
+            )}
+            {journal.story && (
+              <>
+                <dt>남기고 싶은 이야기</dt>
+                <dd>{journal.story}</dd>
+              </>
+            )}
+            {journal.next && (
+              <>
+                <dt>다음의 작은 행동</dt>
+                <dd>{journal.next}</dd>
+              </>
+            )}
+          </dl>
+        ) : (
+          <p className="muted">수치로 담지 못한 하루를 짧게 남겨보세요.</p>
+        )}
+      </article>
       <div className="daily-entries">
         {entries.length ? (
           entries.map((entry) => {

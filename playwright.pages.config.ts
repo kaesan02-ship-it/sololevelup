@@ -10,7 +10,8 @@ export default defineConfig({
     timezoneId: "Asia/Seoul",
     launchOptions: {
       executablePath:
-        process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || "/usr/bin/chromium",
+        process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ||
+        (process.env.CI ? undefined : "/usr/bin/chromium"),
       args: ["--no-sandbox"],
     },
   },

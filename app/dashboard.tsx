@@ -1,4 +1,6 @@
 "use client";
+import { Journey } from "./journey";
+import { JournalEditor } from "./journal";
 import { GrowthBackdrop } from "./growth-art";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -199,6 +201,8 @@ export default function Dashboard() {
     entry?: Entry;
     initialDate?: string;
   } | null>(null);
+  const [journalDate, setJournalDate] = useState<string | null>(null);
+  const [levelUp, setLevelUp] = useState<number | null>(null);
   const [xpModal, setXpModal] = useState(false);
   const [practiceModal, setPracticeModal] = useState(false);
   const [photoModal, setPhotoModal] = useState(false);
@@ -254,7 +258,7 @@ export default function Dashboard() {
   const snapshots = snapshotMetrics(data, snapshotMode, snapshotCategory);
   const overview = summarize(data, date, days);
   const selectedMetric = data.metrics.find((m) => m.id === selected);
-  async function commit(next: Data, message = "저장했어요") {
+  async function commit(next: Data, message = "저장했어요", celebrate = false) {
     if (saving.current) return false;
     saving.current = true;
     setBusy(true);
@@ -262,6 +266,12 @@ export default function Dashboard() {
     try {
       await save(next, data);
       setData(next);
+      if (
+        celebrate &&
+        Math.floor(xp(next) / XP_RULES.perLevel) >
+          Math.floor(xp(data) / XP_RULES.perLevel)
+      )
+        setLevelUp(1 + Math.floor(xp(next) / XP_RULES.perLevel));
       setNotice(message);
       return true;
     } catch (err) {
@@ -339,6 +349,7 @@ export default function Dashboard() {
             ],
       },
       existing ? "완료를 취소했어요" : "오늘의 실천을 기록했어요",
+      true,
     );
   }
   function download(content: string, name: string, type: string) {
@@ -566,7 +577,7 @@ export default function Dashboard() {
             작은 기록이 쌓여
             <br />더 나은 내가 됩니다.
           </p>
-          <span>ONE DAY, ONE LEVEL.</span>
+          <span>SMALL STEPS. REAL GROWTH.</span>
         </div>
         <div className="side-profile">
           <div className="avatar photo-avatar">
@@ -675,7 +686,8 @@ export default function Dashboard() {
                 photoModal ||
                 snapshotEdit ||
                 xpModal ||
-                practiceModal
+                practiceModal ||
+                journalDate
                   ? "floating-error"
                   : "")
               }
@@ -740,6 +752,26 @@ export default function Dashboard() {
                   }}
                 />
               </section>
+              <Journey
+                data={data}
+                date={date}
+                onRecord={(metric) =>
+                  setRecord({
+                    metric,
+                    entry:
+                      metric.kind === "check"
+                        ? data.entries.find(
+                            (e) => e.metricId === metric.id && e.date === date,
+                          )
+                        : undefined,
+                  })
+                }
+                onJournal={() => {
+                  setNotice("");
+                  setJournalDate(date);
+                }}
+                onAdd={() => setPracticeModal(true)}
+              />
               <div className="section-head growth-head">
                 <div>
                   <h2>
@@ -1053,6 +1085,10 @@ export default function Dashboard() {
                 <DailyRecords
                   data={data}
                   today={date}
+                  onJournal={(selectedDate) => {
+                    setNotice("");
+                    setJournalDate(selectedDate);
+                  }}
                   onRecord={(metric, initialDate) =>
                     setRecord({ metric, initialDate })
                   }
@@ -1329,6 +1365,49 @@ export default function Dashboard() {
           {tab === "settings" && (
             <div className="settings-grid">
               <SyncPanel state={cloud} />
+              <section className="panel service-notice">
+                <span className="eyebrow">PERSONAL GROWTH · BETA</span>
+                <h2>서비스와 데이터 안내</h2>
+                <p>
+                  개인 기록을 위한 베타 버전이에요. 공개 순위나 기록 공개 기능은
+                  없어요. 중요한 기록은 JSON으로 따로 백업해주세요.
+                </p>
+                <details>
+                  <summary>내 기록은 어디에 저장되나요?</summary>
+                  <p>
+                    활동·사진·회고는 이 브라우저에 저장돼요. 로그아웃해도 이
+                    기기의 기록은 남으므로 공용 기기에서는 사용에 주의해주세요.
+                    계정을 연결하면 이메일은 Supabase 인증 서비스에, 기록은
+                    Supabase 데이터베이스에 보관돼요. 다른 일반 계정은 내 기록을
+                    볼 수 없지만, 종단간 암호화 일기장은 아니에요.
+                  </p>
+                  <p>
+                    JSON 백업에는 회고와 사진이 포함되고 CSV는 활동 기록만
+                    포함해요. 전체 데이터 삭제 후에는 동기화 완료를
+                    확인해주세요. 이 기능은 인증 계정이나 서비스 백업까지
+                    삭제하는 계정 탈퇴 기능이 아니에요.
+                  </p>
+                </details>
+                <details>
+                  <summary>베타의 현재 범위와 문의</summary>
+                  <p>
+                    이메일을 통한 비밀번호 복구, 자동 계정 탈퇴, 운영 정책과
+                    대규모 사용 검증은 아직 준비 중이에요. 정식 공개 서비스로
+                    안내하기 전 보완할 예정이에요.
+                  </p>
+                  <a
+                    href="https://github.com/kaesan02-ship-it/sololevelup/issues"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    오류·개선 의견 남기기
+                  </a>
+                  <p className="form-hint">
+                    GitHub에 남기는 내용은 공개돼요. 일기·사진·이메일·비밀번호
+                    등 개인 정보는 올리지 마세요.
+                  </p>
+                </details>
+              </section>
               <InstallCard />
               <section className="panel photo-settings-panel">
                 <div>
@@ -1568,14 +1647,16 @@ export default function Dashboard() {
                 </button>
                 <hr />
                 <p className="form-hint">
-                  전체 삭제 전 백업을 다운로드해주세요.
+                  전체 삭제 전 JSON 백업을 다운로드해주세요. 회고·사진도 삭제
+                  대상이며, 동기화 연결 중이면 클라우드에도 반영됩니다. 계정
+                  탈퇴와는 다릅니다.
                 </p>
                 <button
                   className="danger-button"
                   onClick={() =>
                     setConfirm({
                       title: "전체 데이터 삭제",
-                      message: `항목 ${data.metrics.length}개와 기록 ${data.entries.length}개가 영구 삭제됩니다. 백업 없이는 복구할 수 없습니다.`,
+                      message: `항목 ${data.metrics.length}개, 기록 ${data.entries.length}개, 회고 ${data.journals?.length ?? 0}개를 삭제합니다. 동기화가 연결되어 있으면 클라우드에도 반영됩니다. 로그인 계정은 삭제되지 않습니다. 백업 없이는 복구할 수 없습니다.`,
                       action: async () => {
                         if (
                           await commit(emptyData(), "데이터를 초기화했어요")
@@ -1598,7 +1679,7 @@ export default function Dashboard() {
               SOLO LEVELUP <span>·</span> 매일 조금씩, 나답게.
             </span>
             <span>
-              <Shield size={13} /> 이 기기의 브라우저에 저장
+              <Shield size={13} /> 베타 · 기기 저장 / 계정 연결 시 동기화
             </span>
           </footer>
         </div>
@@ -1618,6 +1699,55 @@ export default function Dashboard() {
           </button>
         ))}
       </nav>
+      {levelUp && (
+        <div className="levelup-card" role="status">
+          <Sparkles size={28} />
+          <div>
+            <strong>LEVEL UP · LV. {levelUp}</strong>
+            <p>작은 실천이 쌓여 한 단계 성장했어요.</p>
+          </div>
+          <button
+            className="icon-button"
+            aria-label="레벨업 알림 닫기"
+            onClick={() => setLevelUp(null)}
+          >
+            <X size={18} />
+          </button>
+        </div>
+      )}
+      {journalDate && (
+        <Modal
+          title="하루 회고"
+          close={() => {
+            if (
+              window.confirm(
+                "회고 창을 닫을까요? 저장하지 않은 내용은 사라져요.",
+              )
+            )
+              setJournalDate(null);
+          }}
+        >
+          <JournalEditor
+            key={journalDate}
+            date={journalDate}
+            initial={data.journals?.find((j) => j.date === journalDate)}
+            current={data.journals?.find((j) => j.date === journalDate)}
+            busy={busy}
+            onSave={async (journal) => {
+              const journals = (data.journals ?? []).filter(
+                (j) => j.date !== journalDate,
+              );
+              if (journal) journals.push(journal);
+              const saved = await commit(
+                { ...data, journals },
+                journal ? "회고를 저장했어요" : "회고를 삭제했어요",
+              );
+              if (saved) setJournalDate(null);
+              return saved;
+            }}
+          />
+        </Modal>
+      )}
       {notice && (
         <div className="toast" role="status">
           <Check size={18} />
@@ -1900,6 +2030,7 @@ export default function Dashboard() {
               await commit(
                 { ...data, entries: [...entries, entry] },
                 "기록을 저장했어요.",
+                true,
               )
             )
               setRecord(null);
