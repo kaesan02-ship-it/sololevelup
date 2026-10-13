@@ -8,6 +8,8 @@
 | [Loop Habit Tracker 공식 README](https://github.com/iSoron/uhabits) | 경량 UI, 장기 그래프, 유연한 일정, 며칠 빠져도 진전이 전부 사라지지 않는 점수, 오프라인/내보내기 | 휴식에 페널티 없음, 이미 쌓은 XP 유지, 백업과 선택 기록 유지 |
 | [Anki 공식 README](https://github.com/ankitects/anki) | 간격 반복 학습 프로그램 | 작은 실천의 반복을 중심에 둠. 학습 효과를 모든 활동/게임 XP에 일반화하지 않음 |
 
+| [Joplin 공식 README](https://github.com/laurent22/joplin) | 오프라인 우선 메모, 가져오기, 여러 클라우드와 종단간 암호화 동기화 | 회고도 오프라인·백업·동기화의 동일한 데이터로 취급. 우리 앱에는 종단간 암호화가 없음을 명시 |
+
 Habitica 기능 사이트, Finch, Day One, Duolingo 블로그는 현재 프록시 403으로 본문 열람에 실패했다. 이들의 최신 화면·기능·성과를 확인했다고 주장하지 않는다. 조사 범위를 확장하려면 habitica.com, finchcare.com, dayoneapp.com, blog.duolingo.com 접근이 필요하다.
 
 하루 회고는 사용자 요청을 바탕으로 한 제품 가설이다. 세 문항을 선택 작성하고 점수/연속 기록 의무를 붙이지 않는다. 이후 사용자 테스트에서 작성 부담과 재방문 가치를 확인한다. 치료·건강 개선 효과를 주장하지 않는다.

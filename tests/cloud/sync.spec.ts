@@ -283,19 +283,27 @@ test("two devices sync, preserve offline edits and stop on conflicts", async ({
     .locator(".sidebar")
     .getByRole("button", { name: "설정", exact: true })
     .click();
+  let finishJournalRead!: () => void;
+  const journalReadStarted = new Promise<void>((resolve) => {
+    notifyHeld = resolve;
+  });
+  holdSecondRead = new Promise<void>((resolve) => {
+    finishJournalRead = resolve;
+  });
   await second
     .getByRole("button", { name: "지금 동기화", exact: true })
     .click();
-  await expect(second.locator(".sync-panel .install-status")).toHaveText(
-    "동기화 완료",
-  );
+  await journalReadStarted;
   await second
     .locator(".sidebar")
     .getByRole("button", { name: "상태창", exact: true })
     .click();
-  await second
-    .getByRole("button", { name: "오늘의 회고 돌아보기", exact: false })
-    .click();
+  await second.locator(".journal-invite").click();
+  await expect(second.getByLabel("오늘 잘한 일", { exact: true })).toHaveValue(
+    "",
+  );
+  holdSecondRead = null;
+  finishJournalRead();
   await expect(second.getByLabel("오늘 잘한 일", { exact: true })).toHaveValue(
     "두 기기에 이어지는 회고",
   );

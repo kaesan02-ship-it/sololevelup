@@ -4163,3 +4163,9 @@ textarea {
     padding: 14px;
   }
 }
+.journey-panel p,
+.journal-invite,
+.service-notice p {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}

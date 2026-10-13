@@ -14,7 +14,7 @@ export function JournalEditor({
   busy: boolean;
   onSave: (journal: Journal | undefined) => Promise<boolean>;
 }) {
-  const [baseline] = useState(initial);
+  const [baseline, setBaseline] = useState(initial);
   const [win, setWin] = useState(initial?.win ?? "");
   const [story, setStory] = useState(initial?.story ?? "");
   const [next, setNext] = useState(initial?.next ?? "");
@@ -23,6 +23,16 @@ export function JournalEditor({
     win !== (baseline?.win ?? "") ||
     story !== (baseline?.story ?? "") ||
     next !== (baseline?.next ?? "");
+  useEffect(() => {
+    // A download may finish after opening. Refresh an untouched form, but never
+    // replace a draft the user has started editing.
+    if (!dirty && JSON.stringify(baseline) !== JSON.stringify(current)) {
+      setBaseline(current);
+      setWin(current?.win ?? "");
+      setStory(current?.story ?? "");
+      setNext(current?.next ?? "");
+    }
+  }, [baseline, current, dirty]);
   useEffect(() => {
     if (!dirty) return;
     const handler = (e: BeforeUnloadEvent) => {
